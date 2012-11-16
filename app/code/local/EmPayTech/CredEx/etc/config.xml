@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+       <EmPayTech_CredEx>
+<!-- declare module's version information for database updates -->
+          <version>0.1.0</version>
+       </EmPayTech_CredEx>
+    </modules>
+
+    <global>
+<!-- IMPORTANT: if you use your own namespace (i.e. EmPayTech) you also have to declare blocks group for new module. See topic: http://www.magentocommerce.com/boards/viewthread/22416/#t102732 -->
+    <blocks>
+        <credex>
+            <class>EmPayTech_CredEx_Block</class>
+        </credex>
+    </blocks>
+
+<!-- declare model group for new module -->
+        <models>
+<!-- model group alias to be used in Mage::getModel('credex/...') -->
+            <credex>
+<!-- base class name for the model group -->
+                <class>EmPayTech_CredEx_Model</class>
+            </credex>
+        </models>
+
+<!-- declare resource setup for new module -->
+        <resources>
+<!-- resource identifier -->
+            <credex_setup>
+<!-- specify that this resource is a setup resource and used for upgrades -->
+                <setup>
+<!-- which module to look for install/upgrade files in -->
+                    <module>EmPayTech_CredEx</module>
+                </setup>
+<!-- specify database connection for this resource -->
+                <connection>
+<!-- do not create new connection, use predefined core setup connection -->
+                    <use>core_setup</use>
+                </connection>
+            </credex_setup>
+            <credex_write>
+                <connection>
+                  <use>core_write</use>
+                </connection>
+            </credex_write>
+            <credex_read>
+               <connection>
+                <use>core_read</use>
+              </connection>
+            </credex_read>
+        </resources>
+    </global>
+
+<!-- declare default configuration values for this module -->
+    <default>
+<!-- 'payment' configuration section (tab) -->
+        <payment>
+<!-- 'credex' configuration group (fieldset) -->
+            <credex>
+<!-- by default this payment method is inactive -->
+                <active>0</active>
+<!-- model to handle logic for this payment method -->
+                <model>credex/paymentMethod</model>
+<!-- order status for new orders paid by this payment method -->
+                <order_status>pending</order_status>
+<!-- default title for payment checkout page and order view page -->
+                <title>Credit Card (Authorize.net)</title>
+
+                <cctypes>AE,VI,MC,DI</cctypes>
+                <payment_action>authorize</payment_action>
+                <allowspecific>0</allowspecific>
+            </credex>
+         </payment>
+    </default>
+</config>
