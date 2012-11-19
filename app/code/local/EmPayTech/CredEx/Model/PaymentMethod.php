@@ -78,5 +78,23 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Cc
      * @see examples of transaction specific public methods such as
      * authorize, capture and void in Mage_Paygate_Model_Authorizenet
      */
+
+    /* Mage_Payment_Model_Method_Abstract method overrides */
+    /**
+     * To check billing country is allowed for the payment method
+     *
+     * @return bool
+     */
+    public function canUseForCountry($country)
+    {
+        /* Credex is only available to US customers */
+        if ($country == 'US') {
+            return true;
+        }
+
+        return false;
+    }
+
 }
+
 ?>
