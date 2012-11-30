@@ -130,8 +130,9 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
         $currencyDesc = $order->getBaseCurrencyCode();
 
         $fields = array(
-            'dg_username'=> username,
-            'dg_password'=> password,
+            'dg_username'=> $username,
+            'dg_password'=> $password,
+            'merch_id'=> $merch_id,
 
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
@@ -148,28 +149,44 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
             'ship_addr_zip'=> $shippingaddress->getData('postcode'),
 
             'version' => '0.3',
+            'response_format' => 'XML',
             'cust_id_ext'=> $order->getIncrementId(),
             'inv_action' => 'AUTH_ONLY',
             'inv_value' => $totals,
             /* FIXME: description */
             'udf02' => 'Sample purchase'
         );
+        $query = http_build_query($fields);
 
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,1);
-        curl_setopt($ch, CURLOPT_HEADER, 0); // DO NOT RETURN HTTP HEADERS
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1); // RETURN THE CONTENTS OF THE CALL
+        // FIXME: we have to set response_format
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        //    "Accept: application/xml"
+        //));
+//        curl_setopt($ch, CURLOPT_HEADER, 0); // DO NOT RETURN HTTP HEADERS
+        /* return contents of the call as a variable */
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+
         $result = curl_exec($ch);
         curl_close($ch);
 
-        Mage::log("THOMAS: result: $result");
+        $response = $this->parseResponse($result);
 
-        $this->parseResponse($result);
+        if ($response->status_code == "GW_NOT_AUTH") {
+            Mage::log("Credex: " . $response->status_string);
+            Mage::log("Credex: Please verify your authentication details.");
+            $this->misconfigured();
+        }
+
 
         /* throwing an exception makes us stay on this page so we can repeat */
         Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));

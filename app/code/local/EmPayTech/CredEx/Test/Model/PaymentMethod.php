@@ -90,4 +90,24 @@ EOT;
 
         return $this;
     }
+
+    /**
+     * Test for parseResponse
+     *
+     * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
+     */
+    public function testParseResponseAuthenticationFailed()
+    {
+        $xmlString = <<<EOT
+<?xml version='1.0' encoding='utf-8'?>
+<response><status_code>GW_NOT_AUTH</status_code><status_string><![CDATA[Authentication failed]]></status_string></response>
+EOT;
+
+        $this->assertEquals(
+            "GW_NOT_AUTH",
+            $this->model->parseResponse($xmlString)->status_code
+        );
+
+        return $this;
+    }
 }
