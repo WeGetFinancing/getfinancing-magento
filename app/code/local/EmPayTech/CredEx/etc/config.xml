@@ -7,6 +7,14 @@
        </EmPayTech_CredEx>
     </modules>
 
+    <phpunit>
+       <suite>
+           <modules>
+               <EmPayTech_CredEx />
+           </modules>
+       </suite>
+    </phpunit>
+
     <global>
         <helpers>
             <credex>
