@@ -70,4 +70,24 @@ class EmPayTech_Credex_Test_Model_PaymentMethod extends EcomDev_PHPUnit_Test_Cas
 
         return $this;
     }
+
+    /**
+     * Test for parseResponse
+     *
+     * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
+     */
+    public function testParseResponseNoAccepts()
+    {
+        $xmlString = <<<EOT
+<?xml version='1.0' encoding='utf-8'?>
+<response><status_code>GW_UNSUPPORTED_FORMAT</status_code><status_string><![CDATA[Unsupported response format None. The only format supported is XML]]></status_string></response>
+EOT;
+
+        $this->assertEquals(
+            "GW_UNSUPPORTED_FORMAT",
+            $this->model->parseResponse($xmlString)->status_code
+        );
+
+        return $this;
+    }
 }

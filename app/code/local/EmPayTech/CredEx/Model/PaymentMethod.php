@@ -176,13 +176,13 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
     }
 
 
-    private function parseResponse($xmlString)
+    public function parseResponse($xmlString)
     {
-        $xml = new SimpleXMLElement($xmlString);
-        $status_code = $xml->xpath('response/status_code');
-        $status_string = $xml->xpath('response/status_string');
-        Mage::log("THOMAS: parseResponse: status_code $status_code");
-        Mage::log("THOMAS: parseResponse: status_string $status_string");
+        /* SimpleXMLElement returns an element proxying for the root <response>
+           tag */
+        $response = new SimpleXMLElement($xmlString);
+
+        return $response;
     }
 
     private function misconfigured()

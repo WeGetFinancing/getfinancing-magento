@@ -6,3 +6,6 @@ in your magento tree:
 modman init
 modman clone magento-credex gitolite@git.credex.us:dev/magento
 
+Unit tests
+----------
+phpunit --group EmPayTech_CredEx UnitTests.php
