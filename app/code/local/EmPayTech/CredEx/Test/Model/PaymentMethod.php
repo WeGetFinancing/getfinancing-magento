@@ -110,4 +110,51 @@ EOT;
 
         return $this;
     }
+
+    /**
+     * Test for parseResponse
+     *
+     * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
+     */
+    public function testParseResponseMissingField()
+    {
+        $xmlString = <<<EOT
+<?xml version='1.0' encoding='utf-8'?>
+<response><status_code>GW_MISSING_FIELD</status_code><status_string><![CDATA['cust_email']]></status_string></response>
+EOT;
+
+        $this->assertEquals(
+            "GW_MISSING_FIELD",
+            $this->model->parseResponse($xmlString)->status_code
+        );
+
+        return $this;
+    }
+
+    /**
+     * Test for parseResponse
+     *
+     * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
+     */
+    public function testParseSuccessful()
+    {
+        $xmlString = <<<EOT
+<?xml version='1.0' encoding='utf-8'?>
+<response><status_code>APPROVED</status_code><status_string><![CDATA[]]></status_string><udf02>https://partner-test.credex.net/partner-test/lc/info/a375a42a899ad1c3e3267888fd8173f7</udf02><cust_id>a375a42a899ad1c3e3267888fd8173f7</cust_id><inv_value_requested>5005.00</inv_value_requested><inv_id>a375a42a899ad1c3e3267888fd8173f7</inv_id></response>
+EOT;
+
+        $this->assertEquals(
+            "APPROVED",
+            $this->model->parseResponse($xmlString)->status_code
+        );
+        $this->assertEquals(
+            "5005.00",
+            $this->model->parseResponse($xmlString)->inv_value_requested
+        );
+
+
+        return $this;
+    }
+
+
 }
