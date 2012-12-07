@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/osl-3.0.php
  *
  * @category   EmPayTech
- * @package    EmPayTech_Credex
+ * @package    EmPayTech_CredEx
  * @copyright  Copyright (c) 2012 EmPayTech
  * @author     Thomas Vander Stichele / EmPayTech <support@empaytech.net>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
