@@ -129,6 +129,7 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
         $orderId = $order->getIncrementId();
         $currencyDesc = $order->getBaseCurrencyCode();
 
+        $email = $order->getCustomerEmail();
         $fields = array(
             'dg_username'=> $username,
             'dg_password'=> $password,
@@ -136,7 +137,7 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
 
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
-            'cust_email'=> $billingaddress->getData('email'),
+            'cust_email'=> $email,
 
             'bill_addr_address'=> $billingaddress->getData('street'),
             'bill_addr_city'=> $billingaddress->getData('city'),
