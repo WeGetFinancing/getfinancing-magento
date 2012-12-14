@@ -239,7 +239,18 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
      *
      * @return string
      */
-    public function getOrderPlaceRedirectUrl()
+    /*
+     * http://stackoverflow.com/questions/9185129/magento-payment-redirect-order
+     * If a payment method model implements getOrderPlaceRedirectUrl() the
+     * customer will be redirected after the confirmation step of the one page
+     * checkout, the order entity will be created.
+
+     * If a payment method model implements the getCheckoutRedirectUrl()
+     * method, the customer will be redirected after the payment step of the
+     * one page checkout, and no order entity is created.
+     */
+    public function getCheckoutRedirectUrl()
+//    public function getOrderPlaceRedirectUrl()
     {
           return Mage::getUrl('credex/standard/redirect', array('_secure' => true));
     }

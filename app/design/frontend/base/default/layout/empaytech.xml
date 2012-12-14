@@ -6,5 +6,27 @@
         <reference name="content">
             <block type="core/template" name="credex_standard_redirect" template="empaytech/credex/credex.phtml" />
         </reference>
+        <reference name="head">
+<!-- FIXME: this is one way to get jquery loaded in the head and not
+            conflicting with prototype
+     
+            <block type="core/text" name="google.cdn.jquery">
+                <action method="setText">
+<text><![CDATA[<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><script type="text/javascript">jQuery.noConflict();</script>]]></text>
+                </action>
+            </block>
+-->
+<!-- FIXME: this is another; we move prototype down, so we readd it after
+            jquery
+            <action method="removeItem">
+                <type>js</type>
+                <name>prototype/prototype.js</name>
+            </action>
+
+            <action method="addJs">
+                <script>prototype/prototype.js</script>
+            </action>
+-->
+        </reference>
     </credex_standard_redirect>
 </layout>

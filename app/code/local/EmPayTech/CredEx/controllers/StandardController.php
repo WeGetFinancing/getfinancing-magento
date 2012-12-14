@@ -63,4 +63,37 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 //exit("bailing early at ".__LINE__." in ".__FILE__);
 //        $this->getResponse()->setBody("Magento welcome to your custom module");
     }
+
+    private function getOnepage()
+    {
+        return Mage::getSingleton('checkout/type_onepage');
+    }
+
+    public function failureAction()
+    {
+        Mage::log('THOMAS: failureAction');
+        $lastQuoteId = $this->getOnePage()->getCheckout()->getLastQuoteId();
+        $lastOrderId = $this->getOnePage()->getCheckout()->getLastOrderId();
+        Mage::log("THOMAS: failureAction: last quote $lastQuoteId, last order $lastOrderId");
+        if ($lastQuoteId && $lastOrderId) {
+            $orderModel = Mage::getModel('sales/order')->load($lastOrderId);
+            if($orderModel->canCancel()) {
+                $quote = Mage::getModel('sales/quote')->load($lastQuoteId);
+                $quote->setIsActive(true)->save();
+                $orderModel->cancel();
+                $orderModel->setStatus('canceled');
+                $orderModel->save();
+                Mage::getSingleton('core/session')->setFailureMsg('order_failed');
+                Mage::getSingleton('checkout/session')->setFirstTimeChk('0');
+                $this->_redirect('checkout/index/payment', array("_forced_secure" => true));
+                return;
+            }
+        }
+        if (!$lastQuoteId || !$lastOrderId) {
+            $this->_redirect('checkout/cart', array("_forced_secure" => true));
+            return;
+        }
+        $this->loadLayout();
+        $this->renderLayout();
+    }
 }
