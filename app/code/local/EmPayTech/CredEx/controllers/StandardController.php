@@ -59,7 +59,7 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         $this->loadLayout();
         $this->renderLayout();
 //        Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
-        var_dump(Mage::getSingleton('core/layout')->getUpdate()->getHandles());
+//        var_dump(Mage::getSingleton('core/layout')->getUpdate()->getHandles());
 //exit("bailing early at ".__LINE__." in ".__FILE__);
 //        $this->getResponse()->setBody("Magento welcome to your custom module");
     }

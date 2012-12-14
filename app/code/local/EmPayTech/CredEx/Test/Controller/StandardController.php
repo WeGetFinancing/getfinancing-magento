@@ -49,7 +49,7 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         /* check if our custom layout is loaded */
         $this->assertLayoutHandleLoaded('credex_standard_redirect');
         $layout = $this->getLayout();
-        $this->assert($layout->isLoaded());
+        $this->assertTrue($layout->isLoaded());
         // FIXME: anything else we can do to verify whether our credex
         //        template gets loaded ?
         // $records = $layout->getRecords();
