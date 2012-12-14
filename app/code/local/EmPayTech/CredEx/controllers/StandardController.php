@@ -64,36 +64,34 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 //        $this->getResponse()->setBody("Magento welcome to your custom module");
     }
 
-    private function getOnepage()
+    private function _respondUnauthorized()
     {
-        return Mage::getSingleton('checkout/type_onepage');
+        # FIXME: we need to setHttpResponseCode as well for the unit test to pass
+        # http://framework.zend.com/issues/browse/ZF-10374?page=com.atlassian.jira.plugin.system.issuetabpanels:changehistory-tabpanel
+        $this->getResponse()
+            ->setHttpResponseCode(401)
+            ->setRawHeader('HTTP/1.1 401 Unauthorized')
+            ->setBody('');
     }
 
-    public function failureAction()
+    private function _respond($text)
     {
-        Mage::log('THOMAS: failureAction');
-        $lastQuoteId = $this->getOnePage()->getCheckout()->getLastQuoteId();
-        $lastOrderId = $this->getOnePage()->getCheckout()->getLastOrderId();
-        Mage::log("THOMAS: failureAction: last quote $lastQuoteId, last order $lastOrderId");
-        if ($lastQuoteId && $lastOrderId) {
-            $orderModel = Mage::getModel('sales/order')->load($lastOrderId);
-            if($orderModel->canCancel()) {
-                $quote = Mage::getModel('sales/quote')->load($lastQuoteId);
-                $quote->setIsActive(true)->save();
-                $orderModel->cancel();
-                $orderModel->setStatus('canceled');
-                $orderModel->save();
-                Mage::getSingleton('core/session')->setFailureMsg('order_failed');
-                Mage::getSingleton('checkout/session')->setFirstTimeChk('0');
-                $this->_redirect('checkout/index/payment', array("_forced_secure" => true));
-                return;
-            }
-        }
-        if (!$lastQuoteId || !$lastOrderId) {
-            $this->_redirect('checkout/cart', array("_forced_secure" => true));
+        $this->getResponse()
+            ->setBody($text);
+    }
+
+
+    public function transactAction()
+    {
+        $request = $this->getRequest();
+        $method = $request->getMethod();
+
+        if ($method != 'POST') {
+            $this->_respondUnauthorized();
             return;
         }
-        $this->loadLayout();
-        $this->renderLayout();
+
+        $params = $request->getParams();
+        $params = $request->getPost();
     }
 }

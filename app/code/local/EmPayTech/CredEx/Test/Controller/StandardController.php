@@ -29,6 +29,15 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         $this->assertThat($body, $constraint);
     }
 
+    // FIXME: neither can I figure out how to use RegExp
+    public function _assertResponseBodyIs($string)
+    {
+        $body = $this->getResponse()->getOutputBody();
+        $constraint = $this->equalTo($string);
+        $this->assertThat($body, $constraint);
+    }
+
+
     /**
      * Test for canUseForCountry
      *
@@ -60,6 +69,28 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         $this->_assertResponseBodyContains('Magento');
         // FIXME: in a test, my template does not get invoked
         //$this->_assertResponseBodyContains('Welcome to your custom module');
+
+        return $this;
+    }
+
+    public function testTransact()
+    {
+        $request = $this->getRequest();
+
+
+        $this->dispatch('credex/standard/transact');
+
+        $this->assertRequestRoute('credex/standard/transact');
+
+        //$response = $this->getResponse();
+
+        // FIXME: we get 200 instead of 401 even if setRawHeader was called
+        //        unless the Action also calls setHttpResponseCode
+        $this->assertResponseHttpCode(401);
+        $body = $this->getResponse()->getOutputBody();
+        // FIXME: no idea how to make RegExp work
+        // $this->assertResponseBodyRegExp('/^$/');
+        $this->_assertResponseBodyIs('');
 
         return $this;
     }
