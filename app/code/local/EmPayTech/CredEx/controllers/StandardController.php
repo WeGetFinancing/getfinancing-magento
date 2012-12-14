@@ -81,6 +81,24 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
     }
 
 
+    private function _validateParam($key, $value)
+    {
+        $allowed = array(
+            'function' => array('transact'),
+            'inv_status' => array('Auth', 'AuthOnly'),
+            'method' => array('void', 'purchase')
+        );
+
+        if (! in_array($value, $allowed[$key])) {
+            $msg = "unknown $key $value";
+            Mage::log('credex: transact: ' . $msg);
+            $this->_respond($msg . "\n");
+            return False;
+        }
+
+        return True;
+    }
+
     public function transactAction()
     {
         $request = $this->getRequest();
@@ -93,5 +111,12 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
         $params = $request->getParams();
         $params = $request->getPost();
+
+        foreach (array('function', 'inv_status', 'method') as $key) {
+            if (! $this->_validateParam($key, $params[$key])) {
+                return;
+            }
+        }
+
     }
 }

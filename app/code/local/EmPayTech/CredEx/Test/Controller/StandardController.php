@@ -73,7 +73,7 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         return $this;
     }
 
-    public function testTransact()
+    public function testTransactGet()
     {
         $request = $this->getRequest();
 
@@ -90,6 +90,48 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         $body = $this->getResponse()->getOutputBody();
         // FIXME: no idea how to make RegExp work
         // $this->assertResponseBodyRegExp('/^$/');
+        $this->_assertResponseBodyIs('');
+
+        return $this;
+    }
+
+    private function _post($data)
+    {
+        $request = $this->getRequest();
+        $request->setMethod('POST');
+        parse_str($data, $params);
+        foreach ($params as $key => $value) {
+            $request->setPost($key, $value);
+        }
+
+
+    }
+
+    public function testTransactPostWrongFunction()
+    {
+        $post = 'function=unknown&inv_status=Auth&method=void&inv_id=0991dfd815ad17e530d88728ce046c4c&crl_id=646db422798711e19d620026822d76da&version=0.3';
+        $this->_post($post);
+
+        $this->dispatch('credex/standard/transact');
+
+        $this->assertRequestRoute('credex/standard/transact');
+
+        $this->assertResponseHttpCode(200);
+        $this->_assertResponseBodyIs("unknown function unknown\n");
+
+        return $this;
+    }
+
+    public function testTransactPost()
+    {
+        $post = 'function=transact&inv_status=Auth&method=void&inv_id=0991dfd815ad17e530d88728ce046c4c&crl_id=646db422798711e19d620026822d76da&version=0.3';
+        $this->_post($post);
+
+        $this->dispatch('credex/standard/transact');
+
+        $this->assertRequestRoute('credex/standard/transact');
+
+        $this->assertResponseHttpCode(200);
         $this->_assertResponseBodyIs('');
 
         return $this;
