@@ -70,6 +70,29 @@
         </resources>
     </global>
 
+    <frontend>
+        <secure_url>
+            <credex_standard>/credex/standard</credex_standard>
+        </secure_url>
+        <routers>
+            <credex>
+                <use>standard</use>
+                <args>
+                    <module>EmPayTech_CredEx</module>
+                    <frontName>credex</frontName>
+                </args>
+            </credex>
+        </routers>
+        <layout>
+            <updates>
+                <credex>
+                    <file>empaytech.xml</file>
+                </credex>
+            </updates>
+        </layout>
+    </frontend>
+
+
 <!-- declare default configuration values for this module -->
     <default>
 <!-- 'payment' configuration section (tab) -->

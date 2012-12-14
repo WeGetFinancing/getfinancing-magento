@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+    <credex_standard_redirect>
+        <reference name="content">
+            <block type="core/template" name="credex_standard_redirect" template="empaytech/credex/credex.phtml" />
+        </reference>
+    </credex_standard_redirect>
+</layout>

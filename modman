@@ -1,2 +1,4 @@
 app/code/local/EmPayTech/CredEx app/code/local/EmPayTech/CredEx
 app/etc/modules/EmPayTech_CredEx.xml app/etc/modules/EmPayTech_CredEx.xml
+app/design/frontend/base/default/template/empaytech app/design/frontend/base/default/template/empaytech
+app/design/frontend/base/default/layout/empaytech.xml app/design/frontend/base/default/layout/empaytech.xml

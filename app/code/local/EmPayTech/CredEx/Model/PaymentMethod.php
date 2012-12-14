@@ -158,6 +158,7 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
             'udf02' => 'Sample purchase'
         );
         $query = http_build_query($fields);
+        Mage::log("THOMAS: query: $query");
 
         $ch = curl_init($url);
 
@@ -189,8 +190,16 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
         }
 
 
-        /* throwing an exception makes us stay on this page so we can repeat */
-        Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));
+        Mage::log("$result");
+
+        if ($response->status_code == "APPROVED") {
+            $this->getSession()->setApplicationURL((string) $response->udf02);
+            $this->getSession()->setCustId((string) $response->cust_id);
+            $this->getSession()->setInvId((string) $response->inv_id);
+        } else {
+            /* throwing an exception makes us stay on this page so we can repeat */
+            Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));
+        }
     }
 
 
@@ -222,6 +231,27 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
         }
 
         return false;
+    }
+
+
+    /**
+     * Return Order place redirect url
+     *
+     * @return string
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+          return Mage::getUrl('credex/standard/redirect', array('_secure' => true));
+    }
+
+     /**
+     * Get credex session namespace
+     *
+     * @return Mage_Credex_Model_Session
+     */
+    public function getSession()
+    {
+        return Mage::getSingleton('checkout/session');
     }
 
 
