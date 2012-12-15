@@ -15,7 +15,7 @@ getting a loan.
     $url = $session->getApplicationURL();
     if (! $url) {
         /* use a test url so we can refresh this page */
-        url = "https://partner-test.credex.net/partner-test/lc/info/5916db59362013d4391982a270ef87fa";
+        $url = "https://partner-test.credex.net/partner-test/lc/info/5916db59362013d4391982a270ef87fa";
     }
 ?>
 <script type="text/javascript">
@@ -23,6 +23,8 @@ getting a loan.
     var onComplete = function() {
         // this is called when the user finishes all the steps and
         // gets loan preapproved
+        var success = '<?php echo Mage::getUrl('checkout/onepage/success'); ?>';
+        window.location = success;
     };
     var onAbort = function() {
         // this is called when the user closes the lightbox before

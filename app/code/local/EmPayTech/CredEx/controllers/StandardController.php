@@ -15,6 +15,9 @@
  * @author     Thomas Vander Stichele / EmPayTech <support@empaytech.net>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
+require_once 'EmPayTech/CredEx.php';
+
 class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Action
 {
     /**
@@ -41,10 +44,33 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
      */
     public function getPaymentMethod()
     {
-        return Mage::getSingleton('credex/paymentmethod');
+        return Mage::getSingleton('credex/paymentMethod');
     }
 
-    /**
+    public function requestAction()
+    {
+        Mage::log('THOMAS: requestAction');
+        $credex = new CredEx_Magento($this->getPaymentMethod());
+
+        $session = Mage::getSingleton('checkout/session');
+        $quoteId = $session->getQuoteId();
+        //Zend_Debug::dump($session);
+        Mage::log('THOMAS: do we get YES' . $session->getThomas());
+        Mage::log('THOMAS: do we get quoteId' . $session->getQuoteId());
+        if (!$quoteId) $quoteId = 11;
+        $quote = Mage::getModel("sales/quote")->load($quoteId);
+
+        Mage::log("THOMAS: quoteId $quoteId");
+
+
+        $response = $credex->request($quote);
+        if ($response->status_code == "APPROVED") {
+            $this->_redirect('credex/standard/redirect',
+                array('_secure' => true));
+        }
+    }
+
+     /**
      * When a customer chooses CredEx on Checkout/Payment page
      *
      */
@@ -109,7 +135,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             return;
         }
 
-        $params = $request->getParams();
         $params = $request->getPost();
 
         foreach (array('function', 'inv_status', 'method') as $key) {
@@ -117,6 +142,15 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
                 return;
             }
         }
+
+        Mage::log('credex: received postback ' .
+            $params['function'] . '/' .
+            $params['inv_status'] . '/' .
+            $params['method'] . ' for inv_id ' .
+            $params['inv_id']);
+
+        $order = Mage::getModel('sales/order')->load($params['cust_id_ext']);
+        print_r($order);
 
     }
 }

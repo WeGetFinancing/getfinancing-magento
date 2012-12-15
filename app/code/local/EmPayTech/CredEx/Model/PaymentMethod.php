@@ -89,133 +89,9 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
      */
     public function authorize(Varien_Object $payment, $amount)
     {
-        $errors = FALSE;
-
         Mage::log("Credex: request to authorize for $ $amount");
-
-        $keys = array("platform", "merch_id", "username", "password");
-
-        foreach ($keys as $key) {
-            $$key = $this->getConfigData($key);
-            if (!$$key) {
-                Mage::log("Credex: specify $key in the configuration");
-                $errors = TRUE;
-            }
-        }
-
-        $platforms = array('staging', 'platform');
-        if (!in_array($platform, $platforms)) {
-            Mage::log("Credex: platform is set to unsupported value $platform");
-            $errors = TRUE;
-        }
-
-        if ($errors) $this->misconfigured();
-
-        $key = "gateway_url_$platform";
-        $url = $this->getConfigData($key);
-        if (!$url) {
-            Mage::log("Credex: specify $key in the configuration");
-            $errors = TRUE;
-        }
-
-        if ($errors) $this->misconfigured();
-
-        $order = $payment->getOrder();
-
-        $billingaddress = $order->getBillingAddress();
-        $shippingaddress = $order->getShippingAddress();
-        $totals = number_format($amount, 2, '.', '');
-
-        $orderId = $order->getIncrementId();
-        $currencyDesc = $order->getBaseCurrencyCode();
-
-        $email = $order->getCustomerEmail();
-        $fields = array(
-            'dg_username'=> $username,
-            'dg_password'=> $password,
-            'merch_id'=> $merch_id,
-
-            'cust_fname'=> $billingaddress->getData('firstname'),
-            'cust_lname'=> $billingaddress->getData('lastname'),
-            'cust_email'=> $email,
-
-            'bill_addr_address'=> $billingaddress->getData('street'),
-            'bill_addr_city'=> $billingaddress->getData('city'),
-            'bill_addr_state'=> $billingaddress->getData('region'),
-            'bill_addr_zip'=> $billingaddress->getData('postcode'),
-
-            'ship_addr_address'=> $shippingaddress->getData('street'),
-            'ship_addr_city'=> $shippingaddress->getData('city'),
-            'ship_addr_state'=> $shippingaddress->getData('region'),
-            'ship_addr_zip'=> $shippingaddress->getData('postcode'),
-
-            'version' => '0.3',
-            'response_format' => 'XML',
-            'cust_id_ext'=> $order->getIncrementId(),
-            'inv_action' => 'AUTH_ONLY',
-            'inv_value' => $totals,
-            /* FIXME: description */
-            'udf02' => 'Sample purchase'
-        );
-        $query = http_build_query($fields);
-        Mage::log("THOMAS: query: $query");
-
-        $ch = curl_init($url);
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,1);
-        // FIXME: we have to set response_format
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        //    "Accept: application/xml"
-        //));
-//        curl_setopt($ch, CURLOPT_HEADER, 0); // DO NOT RETURN HTTP HEADERS
-        /* return contents of the call as a variable */
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        $response = $this->parseResponse($result);
-
-        if ($response->status_code == "GW_NOT_AUTH") {
-            Mage::log("Credex: " . $response->status_string);
-            Mage::log("Credex: Please verify your authentication details.");
-            $this->misconfigured();
-        }
-
-
-        Mage::log("$result");
-
-        if ($response->status_code == "APPROVED") {
-            $this->getSession()->setApplicationURL((string) $response->udf02);
-            $this->getSession()->setCustId((string) $response->cust_id);
-            $this->getSession()->setInvId((string) $response->inv_id);
-        } else {
-            /* throwing an exception makes us stay on this page so we can repeat */
-            Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));
-        }
     }
 
-
-    public function parseResponse($xmlString)
-    {
-        /* SimpleXMLElement returns an element proxying for the root <response>
-           tag */
-        $response = new SimpleXMLElement($xmlString);
-
-        return $response;
-    }
-
-    private function misconfigured()
-    {
-        Mage::throwException(Mage::helper('paygate')->__('The web store has misconfigured the Credex payment module.'));
-    }
 
     /* Mage_Payment_Model_Method_Abstract method overrides */
     /**
@@ -252,7 +128,11 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
     public function getCheckoutRedirectUrl()
 //    public function getOrderPlaceRedirectUrl()
     {
-          return Mage::getUrl('credex/standard/redirect', array('_secure' => true));
+        $quoteId = $this->getSession()->getQuoteId();
+        Mage::log('THOMAS: getCehckout: quoteId ' . $quoteId);
+        $this->getSession()->setThomas('YES');
+        $this->getSession()->setCredexPayment('YES');
+          return Mage::getUrl('credex/standard/request', array('_secure' => true));
     }
 
      /**
