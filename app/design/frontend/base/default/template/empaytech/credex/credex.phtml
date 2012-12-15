@@ -30,6 +30,7 @@ getting a loan.
         // this is called when the user closes the lightbox before
         // finishing all the steps
 //        var failure = '<?php echo Mage::getUrl('credex/standard/failure'); ?>';
+        jQuery('#credex-message').text('Payment aborted.  Redirecting you to the payment choice.');
         var failure = '<?php echo Mage::getUrl('checkout/onepage'); ?>';
         // FIXME: if we redirect like this, we go to the start of the
         //        onpage checkout
@@ -45,3 +46,4 @@ getting a loan.
     };
     new Credex(url, onComplete, onAbort);
 </script>
+<h2 id="credex-message"></h2>
