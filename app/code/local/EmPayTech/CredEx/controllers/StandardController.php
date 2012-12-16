@@ -91,6 +91,97 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 //        $this->getResponse()->setBody("Magento welcome to your custom module");
     }
 
+    /**
+     * Redirected to from credex box on success
+     */
+    public function successAction()
+    {
+        Mage::log('THOMAS: successAction');
+        $session = Mage::getSingleton('checkout/session');
+        $quoteId = $session->getQuoteId();
+        $quote = Mage::getModel("sales/quote")->load($quoteId);
+
+        $quote->setIsActive(true)->reserveOrderId();
+        $quote->getPayment()->importData(array('method'=>'credex'));
+
+        /* see Mage_GoogleCheckout_Model_Api_Xml_Callback */
+        $convertQuote = Mage::getSingleton('sales/convert_quote');
+        $order = $convertQuote->toOrder($quote);
+
+        if ($quote->isVirtual()) {
+            $convertQuote->addressToOrder($quote->getBillingAddress(), $order);
+        } else {
+            $convertQuote->addressToOrder($quote->getShippingAddress(), $order);
+        }
+
+//        $order->setExtOrderId($this->getGoogleOrderNumber());
+//        $order->setExtCustomerId($this->getData('root/buyer-id/VALUE'));
+
+        if (!$order->getCustomerEmail()) {
+            $order->setCustomerEmail($billing->getEmail())
+                ->setCustomerPrefix($billing->getPrefix())
+                ->setCustomerFirstname($billing->getFirstname())
+                ->setCustomerMiddlename($billing->getMiddlename())
+                ->setCustomerLastname($billing->getLastname())
+                ->setCustomerSuffix($billing->getSuffix());
+        }
+
+        $order->setBillingAddress($convertQuote->addressToOrderAddress($quote->getBillingAddress()));
+
+        if (!$quote->isVirtual()) {
+            $order->setShippingAddress($convertQuote->addressToOrderAddress($quote->getShippingAddress()));
+        }
+
+
+        foreach ($quote->getAllItems() as $item) {
+            $orderItem = $convertQuote->itemToOrderItem($item);
+            if ($item->getParentItem()) {
+                $orderItem->setParentItem($order->getItemByQuoteItemId($item->getParentItem()->getId()));
+            }
+            $order->addItem($orderItem);
+        }
+
+        /*
+         * Adding transaction for correct transaction information displaying on order view at back end.
+         * It has no influence on api interaction logic.
+         */
+        $payment = Mage::getModel('sales/order_payment')
+            ->setMethod('credex')
+//            ->setTransactionId($this->getGoogleOrderNumber())
+            ->setIsTransactionClosed(false);
+        $order->setPayment($payment);
+        $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+
+        $order->place();
+        $order->save();
+        $order->sendNewOrderEmail();
+
+        $quote->setIsActive(false)->save();
+
+
+
+
+//        $quote->setIsActive(false)->save();
+        Mage::log('THOMAS: successAction saved quote ' . $quoteId);
+
+        $lastOrderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+        $incrementId = $order->getIncrementId();
+        $session->setCredexIncrementId($incrementId);
+        Mage::log('THOMAS: got order increment id ' . $incrementId);
+
+//        $state = Mage_Sales_Model_Order::STATE_PROCESSING;
+//        $order->setState($state);
+//        $order->setStatus('processing');
+//        $order->sendNewOrderEmail();
+//        $order->save();
+
+        $this->loadLayout();
+        $this->renderLayout();
+
+//        $this->_redirect('checkout/onepage/success', array('_secure'=>true));
+    }
+
+
     private function _respondUnauthorized()
     {
         # FIXME: we need to setHttpResponseCode as well for the unit test to pass
