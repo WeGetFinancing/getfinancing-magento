@@ -23,14 +23,18 @@ getting a loan.
     var onComplete = function() {
         // this is called when the user finishes all the steps and
         // gets loan preapproved
-        var success = '<?php echo Mage::getUrl('checkout/onepage/success'); ?>';
+        jQuery('#credex-message').text(
+            'Payment aborted.  Redirecting you to the order placement.');
+
+        var success = '<?php echo Mage::getUrl('credex/standard/success'); ?>';
         window.location = success;
     };
     var onAbort = function() {
         // this is called when the user closes the lightbox before
         // finishing all the steps
 //        var failure = '<?php echo Mage::getUrl('credex/standard/failure'); ?>';
-        jQuery('#credex-message').text('Payment aborted.  Redirecting you to the payment choice.');
+        jQuery('#credex-message').text(
+            'Payment aborted.  Redirecting you to the payment choice.');
         var failure = '<?php echo Mage::getUrl('checkout/onepage'); ?>';
         // FIXME: if we redirect like this, we go to the start of the
         //        onpage checkout
