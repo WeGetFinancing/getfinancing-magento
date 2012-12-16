@@ -29,4 +29,9 @@
 -->
         </reference>
     </credex_standard_redirect>
+    <credex_standard_success>
+        <reference name="content">
+            <block type="core/template" name="credex_standard_success" template="empaytech/credex/success.phtml" />
+        </reference>
+    </credex_standard_success>
 </layout>
