@@ -57,13 +57,14 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         //Zend_Debug::dump($session);
         Mage::log('THOMAS: do we get YES' . $session->getThomas());
         Mage::log('THOMAS: do we get quoteId' . $session->getQuoteId());
+        // FIXME: temporary quote id
         if (!$quoteId) $quoteId = 11;
         $quote = Mage::getModel("sales/quote")->load($quoteId);
 
         Mage::log("THOMAS: quoteId $quoteId");
 
-
         $response = $credex->request($quote);
+
         if ($response->status_code == "APPROVED") {
             $this->_redirect('credex/standard/redirect',
                 array('_secure' => true));
