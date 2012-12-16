@@ -129,9 +129,9 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
     public function transactAction()
     {
         $request = $this->getRequest();
-        $method = $request->getMethod();
+        // $method = $request->getMethod();
 
-        if ($method != 'POST') {
+        if (! $request->isPost()) {
             $this->_respondUnauthorized();
             return;
         }
