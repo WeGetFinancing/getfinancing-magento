@@ -18,11 +18,25 @@
 
 class CredEx
 {
+    /**
+     * @param string $url      url to post requests to (ends in transact.cfm)
+     * @param string $merch_id merchant id
+     * @param string $username
+     * @param string $password
+     */
     public function __construct($url, $merch_id, $username, $password) {
-        $this->_url = $url;
-        $this->_merch_id = $merch_id;
+        $this->url = $url;
+        $this->merch_id = $merch_id;
         $this->_username = $username;
         $this->_password = $password;
+    }
+
+    public function getDataspace() {
+        if (strpos($this->url, 'api-test') !== false) {
+            return 'staging';
+        } else {
+            return 'production';
+        }
     }
 
     public function log($msg) {
@@ -32,14 +46,14 @@ class CredEx
         $fields = array_merge($fields, array(
             'dg_username'=> $this->_username,
             'dg_password'=> $this->_password,
-            'merch_id'=> $this->_merch_id));
+            'merch_id'=> $this->merch_id));
 
         $query = http_build_query($fields);
         $this->log("request: $query");
 
-        $ch = curl_init($this->_url);
+        $ch = curl_init($this->url);
 
-        curl_setopt($ch, CURLOPT_URL, $this->_url);
+        curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
