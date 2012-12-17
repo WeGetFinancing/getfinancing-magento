@@ -129,10 +129,17 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
 //    public function getOrderPlaceRedirectUrl()
     {
         $quoteId = $this->getSession()->getQuoteId();
-        Mage::log('THOMAS: getCehckout: quoteId ' . $quoteId);
-        $this->getSession()->setThomas('YES');
-        $this->getSession()->setCredexPayment('YES');
-          return Mage::getUrl('credex/standard/request', array('_secure' => true));
+        $quote = Mage::getModel("sales/quote")->load($quoteId);
+
+        // reserve an order id and set it as cust_id_ext to use as the
+        // reference for credex everywhere
+        $orderId = $quote->reserveOrderId()->getReservedOrderId();
+        $quote->save();
+        $this->getSession()->setCredexCustIdExt($orderId);
+
+        Mage::log('THOMAS: getCehckout: reserved order id ' . $orderId);
+        return Mage::getUrl('credex/standard/request',
+            array('_secure' => true));
     }
 
      /**
@@ -144,8 +151,6 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
     {
         return Mage::getSingleton('checkout/session');
     }
-
-
 }
 
 ?>

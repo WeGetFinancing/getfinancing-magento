@@ -50,18 +50,18 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
     public function requestAction()
     {
         Mage::log('THOMAS: requestAction');
-        $credex = new CredEx_Magento($this->getPaymentMethod());
 
         $session = Mage::getSingleton('checkout/session');
         $quoteId = $session->getQuoteId();
-        //Zend_Debug::dump($session);
-        Mage::log('THOMAS: do we get YES' . $session->getThomas());
-        Mage::log('THOMAS: do we get quoteId' . $session->getQuoteId());
         // FIXME: temporary quote id
         if (!$quoteId) $quoteId = 11;
         $quote = Mage::getModel("sales/quote")->load($quoteId);
 
-        Mage::log("THOMAS: quoteId $quoteId");
+        $reservedOrderId = $session->getCredexCustIdExt();
+        $quote->setReservedOrderId($reservedOrderId);
+        Mage::log('THOMAS: request for cust_id_ext ' . $reservedOrderId);
+
+        $credex = new CredEx_Magento($this->getPaymentMethod());
 
         $response = $credex->request($quote);
 
@@ -97,74 +97,12 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
     public function successAction()
     {
         Mage::log('THOMAS: successAction');
+
         $session = Mage::getSingleton('checkout/session');
-        $quoteId = $session->getQuoteId();
-        $quote = Mage::getModel("sales/quote")->load($quoteId);
 
-        $quote->setIsActive(true)->reserveOrderId();
-        $quote->getPayment()->importData(array('method'=>'credex'));
+        $reservedOrderId = $session->getCredexCustIdExt();
+        $order = $this->_convertQuote($reservedOrderId);
 
-        /* see Mage_GoogleCheckout_Model_Api_Xml_Callback */
-        $convertQuote = Mage::getSingleton('sales/convert_quote');
-        $order = $convertQuote->toOrder($quote);
-
-        if ($quote->isVirtual()) {
-            $convertQuote->addressToOrder($quote->getBillingAddress(), $order);
-        } else {
-            $convertQuote->addressToOrder($quote->getShippingAddress(), $order);
-        }
-
-//        $order->setExtOrderId($this->getGoogleOrderNumber());
-//        $order->setExtCustomerId($this->getData('root/buyer-id/VALUE'));
-
-        if (!$order->getCustomerEmail()) {
-            $order->setCustomerEmail($billing->getEmail())
-                ->setCustomerPrefix($billing->getPrefix())
-                ->setCustomerFirstname($billing->getFirstname())
-                ->setCustomerMiddlename($billing->getMiddlename())
-                ->setCustomerLastname($billing->getLastname())
-                ->setCustomerSuffix($billing->getSuffix());
-        }
-
-        $order->setBillingAddress($convertQuote->addressToOrderAddress($quote->getBillingAddress()));
-
-        if (!$quote->isVirtual()) {
-            $order->setShippingAddress($convertQuote->addressToOrderAddress($quote->getShippingAddress()));
-        }
-
-
-        foreach ($quote->getAllItems() as $item) {
-            $orderItem = $convertQuote->itemToOrderItem($item);
-            if ($item->getParentItem()) {
-                $orderItem->setParentItem($order->getItemByQuoteItemId($item->getParentItem()->getId()));
-            }
-            $order->addItem($orderItem);
-        }
-
-        /*
-         * Adding transaction for correct transaction information displaying on order view at back end.
-         * It has no influence on api interaction logic.
-         */
-        $payment = Mage::getModel('sales/order_payment')
-            ->setMethod('credex')
-//            ->setTransactionId($this->getGoogleOrderNumber())
-            ->setIsTransactionClosed(false);
-        $order->setPayment($payment);
-        $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
-
-        $order->place();
-        $order->save();
-        $order->sendNewOrderEmail();
-
-        $quote->setIsActive(false)->save();
-
-
-
-
-//        $quote->setIsActive(false)->save();
-        Mage::log('THOMAS: successAction saved quote ' . $quoteId);
-
-        $lastOrderId = Mage::getSingleton('checkout/session')->getLastOrderId();
         $incrementId = $order->getIncrementId();
         $session->setCredexIncrementId($incrementId);
         Mage::log('THOMAS: got order increment id ' . $incrementId);
@@ -177,8 +115,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
         $this->loadLayout();
         $this->renderLayout();
-
-//        $this->_redirect('checkout/onepage/success', array('_secure'=>true));
     }
 
 
@@ -241,8 +177,126 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             $params['method'] . ' for inv_id ' .
             $params['inv_id']);
 
-        $order = Mage::getModel('sales/order')->load($params['cust_id_ext']);
-        print_r($order);
+        $order = Mage::getModel('sales/order')
+            ->loadByIncrementId($params['cust_id_ext']);
+        // FIXME: sanity check that this is the right order with our id ?
+        // FIXME: may not have order yet, for purchase/AuthOnly
 
+        if ($params['method'] == 'void') {
+            $this->_setState($order,
+                Mage_Sales_Model_Order::STATE_CANCELED);
+            return;
+        } else if ($params['method'] == 'purchase') {
+            if ($params['inv_status'] == 'AuthOnly') {
+                $order = $this->_convertQuote($params['cust_id_ext']);
+                return;
+            } else if ($params['inv_status'] == 'Auth') {
+                $this->_setState($order,
+                    Mage_Sales_Model_Order::STATE_PROCESSING);
+                return;
+            } else {
+                Mage::log('Unknown inv_action ' . $params['inv_action']);
+            }
+        } else {
+            Mage::log('Unknown method ' . $params['method']);
+        }
+
+
+    }
+
+    private function _setState($order, $state) {
+        $oldState = $order->getState();
+        $order->setState($state);
+        $order->setStatus($state);
+        Mage::log("THOMAS: changed state from $oldState to $state");
+        $order->save();
+    }
+
+    /*
+     * Convert a quote to an order in state payment_review
+     * Called on AuthOnly/purchase callback and through onComplete callback
+     * from box
+     */
+    private function _convertQuote($reservedOrderId)
+    {
+       // LOOK FOR EXISTING ORDER TO AVOID DUPLICATES
+        $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
+        if ($order->getId()) {
+            print_r($order);
+            Mage::log('THOMAS: success: already have order with id ' . $reservedOrderId);
+            return $order; // FIXME: finish properly
+        }
+
+
+        // new order, so look up quote for this order
+        $quote = Mage::getModel("sales/quote")->load(
+            $reservedOrderId, 'reserved_order_id');
+
+        Mage::log('THOMAS: convert quote for cust_id_ext ' . $reservedOrderId);
+
+        // convert quote to order
+        $quote->setIsActive(true);
+        $quote->getPayment()->importData(array('method'=>'credex'));
+
+        /* see Mage_GoogleCheckout_Model_Api_Xml_Callback */
+        $convertQuote = Mage::getSingleton('sales/convert_quote');
+        $order = $convertQuote->toOrder($quote);
+
+        if ($quote->isVirtual()) {
+            $convertQuote->addressToOrder($quote->getBillingAddress(), $order);
+        } else {
+            $convertQuote->addressToOrder($quote->getShippingAddress(), $order);
+        }
+
+//        $order->setExtOrderId($this->getGoogleOrderNumber());
+//        $order->setExtCustomerId($this->getData('root/buyer-id/VALUE'));
+        Mage::log('THOMAS: order id ' . $order->getId());
+
+        if (!$order->getCustomerEmail()) {
+            $order->setCustomerEmail($billing->getEmail())
+                ->setCustomerPrefix($billing->getPrefix())
+                ->setCustomerFirstname($billing->getFirstname())
+                ->setCustomerMiddlename($billing->getMiddlename())
+                ->setCustomerLastname($billing->getLastname())
+                ->setCustomerSuffix($billing->getSuffix());
+        }
+
+        $order->setBillingAddress($convertQuote->addressToOrderAddress($quote->getBillingAddress()));
+
+        if (!$quote->isVirtual()) {
+            $order->setShippingAddress($convertQuote->addressToOrderAddress($quote->getShippingAddress()));
+        }
+
+
+        foreach ($quote->getAllItems() as $item) {
+            $orderItem = $convertQuote->itemToOrderItem($item);
+            if ($item->getParentItem()) {
+                $orderItem->setParentItem($order->getItemByQuoteItemId($item->getParentItem()->getId()));
+            }
+            $order->addItem($orderItem);
+        }
+
+        /*
+         * Adding transaction for correct transaction information displaying on order view at back end.
+         * It has no influence on api interaction logic.
+         */
+        $payment = Mage::getModel('sales/order_payment')
+            ->setMethod('credex')
+//            ->setTransactionId($this->getGoogleOrderNumber())
+            ->setIsTransactionClosed(false);
+        $order->setPayment($payment);
+        $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+
+        // place sets is to STATE_PROCESSING
+        $order->place();
+        $this->_setState($order,
+            Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW);
+
+        $order->save();
+        $order->sendNewOrderEmail();
+
+        $quote->setIsActive(false)->save();
+
+        return $order;
     }
 }

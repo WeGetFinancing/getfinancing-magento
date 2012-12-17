@@ -134,6 +134,7 @@ class CredEx_Magento extends CredEx
         $this->log("request for total amount $totals");
 
         $email = $quote->getCustomerEmail();
+        $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
@@ -152,7 +153,7 @@ class CredEx_Magento extends CredEx
             'version' => '0.3',
             'response_format' => 'XML',
             // FIXME
-            'cust_id_ext'=> $quote->getIncrementId(),
+            'cust_id_ext'=> $cust_id_ext,
             'inv_action' => 'AUTH_ONLY',
             'inv_value' => $totals,
             /* FIXME: description */
