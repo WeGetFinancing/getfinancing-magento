@@ -49,8 +49,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
     public function requestAction()
     {
-        Mage::log('THOMAS: requestAction');
-
         $session = Mage::getSingleton('checkout/session');
         $quoteId = $session->getQuoteId();
         // FIXME: temporary quote id
@@ -59,7 +57,7 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
         $reservedOrderId = $session->getCredexCustIdExt();
         $quote->setReservedOrderId($reservedOrderId);
-        Mage::log('THOMAS: request for cust_id_ext ' . $reservedOrderId);
+        Mage::log('Credex: request loan for cust_id_ext ' . $reservedOrderId);
 
         $credex = new CredEx_Magento($this->getPaymentMethod());
 
@@ -219,9 +217,8 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             print_r($order);
             Mage::log('Credex: convertQuote: we already have order with id ' .
                 $reservedOrderId);
-            return $order; // FIXME: finish properly
+            return $order;
         }
-
 
         // new order, so look up quote for this order
         $quote = Mage::getModel("sales/quote")->load(
@@ -253,7 +250,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
 //        $order->setExtOrderId($this->getGoogleOrderNumber());
 //        $order->setExtCustomerId($this->getData('root/buyer-id/VALUE'));
-        Mage::log('THOMAS: order id ' . $order->getId());
 
         if (!$order->getCustomerEmail()) {
             $order->setCustomerEmail($billing->getEmail())

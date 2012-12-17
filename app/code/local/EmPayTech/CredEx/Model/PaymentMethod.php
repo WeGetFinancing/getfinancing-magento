@@ -137,7 +137,7 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
         $quote->save();
         $this->getSession()->setCredexCustIdExt($orderId);
 
-        Mage::log('THOMAS: getCehckout: reserved order id ' . $orderId);
+        Mage::log('Credex: getCheckout: reserved order id ' . $orderId);
         return Mage::getUrl('credex/standard/request',
             array('_secure' => true));
     }
