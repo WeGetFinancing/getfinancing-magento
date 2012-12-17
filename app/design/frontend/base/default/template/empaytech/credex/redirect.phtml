@@ -18,8 +18,18 @@ getting a loan.
         Mage::log('THOMAS: No url in session, faking it');
         $url = "https://partner-test.credex.net/partner-test/lc/info/5916db59362013d4391982a270ef87fa";
     }
+
+    $paymentMethod = Mage::getSingleton('credex/paymentMethod');
+    $credex = new CredEx_Magento($paymentMethod);
 ?>
 <script type="text/javascript">
+
+    Credex.counter({
+        stage: 'payment',
+        dataspace: '<?php echo $credex->getDataspace(); ?>',
+        merchantID: '<?php echo $credex->merch_id; ?>'
+    });
+
     var url = '<?php echo $url; ?>';
     var onComplete = function() {
         // this is called when the user finishes all the steps and
