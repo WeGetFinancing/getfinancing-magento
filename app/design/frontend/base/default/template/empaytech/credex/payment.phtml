@@ -7,6 +7,13 @@
 <script type="text/javascript"
         src="https://partner.credex.net/libs/1.0/credex.js">
 </script>
+<link rel="stylesheet" type="text/css"
+      href="https://partner.credex.net/libs/1.0/colorbox/colorbox.css">
+</script>
+<script type="text/javascript"
+        src="https://partner.credex.net/libs/1.0/colorbox/jquery.colorbox-min.js">
+</script>
+
 <script type="text/javascript">
 <?php
     /* ajax listener inspired by
@@ -17,11 +24,24 @@
     $paymentMethod = Mage::getSingleton('credex/paymentMethod');
     $credex = new CredEx_Magento($paymentMethod);
 ?>
+
+jQuery(document).ready(function() {
     if (Ajax.Responders) {
         Ajax.Responders.register({onComplete: function (response) {
             // console.log('response url: ' + response.url);
             if (response.url.include('toStep=payment')) {
-                // console.log('moved to payment step');
+                console.log('Credex: moved to payment step');
+
+            // add credex image and faq link
+            // FIXME: use credex.js to do this
+            // FIXME: when reaching this step, magento resets the contents of input
+            var input = jQuery('#p_method_credex');
+            console.log(input);
+            var dt = input.parent();
+            jQuery(dt).append('<a class="colorbox-iframe" href="http://www.credex.net/faq" style="outline: none;"><img src="https://partner.credex.net/media/1.0/buttons/png/btn_credex_200x36.png" style="vertical-align: middle;"></a>');
+            jQuery('.colorbox-iframe').colorbox({
+                iframe: true, width: '80%', height: '80%' });
+
 
                 Credex.counter({
                     stage: 'payment',
@@ -32,4 +52,5 @@
             }
         }});
     }
+});
 </script>
