@@ -248,8 +248,16 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         // new order, so look up quote for this order
         $quote = Mage::getModel("sales/quote")->load(
             $reservedOrderId, 'reserved_order_id');
+        // FIXME: no way to get persisted additional info
+        /*
+        $custId = $quote->getCredexCustId();
+        $invId = $quote->getCredexInvId();
+        $custId = $quote->getAdditionalData('credexCustId');
+         */
 
-        Mage::log('THOMAS: convert quote for cust_id_ext ' . $reservedOrderId);
+        Mage::log("Credex: convert quote for cust_id_ext $reservedOrderId " .
+        //          ", Credex cust_id $custId, inv_id $invId");
+        "");
 
         // convert quote to order
         $quote->setIsActive(true);
