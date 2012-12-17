@@ -35,7 +35,7 @@ class EmPayTech_CredEx_Model_PaymentMethod extends Mage_Payment_Model_Method_Abs
     /**
      * Can capture funds online?
      */
-    protected $_canCapture              = true;
+    protected $_canCapture              = false;
 
     /**
      * Can capture partial amounts online?
