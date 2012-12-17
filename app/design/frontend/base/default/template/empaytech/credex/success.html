@@ -1,0 +1,8 @@
+Congratulations.
+
+You have applied for a loan through Credex.
+<?php
+    $session = Mage::getSingleton('checkout/session');
+    $orderId = $session->getLastOrderId();
+    echo "Your order id is $orderId\n";
+?>
