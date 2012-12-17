@@ -171,29 +171,38 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             }
         }
 
-        Mage::log('credex: received postback ' .
+        $postbackMessage = 'Credex: received postback ' .
             $params['function'] . '/' .
             $params['inv_status'] . '/' .
-            $params['method'] . ' for inv_id ' .
-            $params['inv_id']);
+            $params['method'] .
+            ' for inv_id ' . $params['inv_id'];
+
+        Mage::log($postbackMessage);
 
         $order = Mage::getModel('sales/order')
             ->loadByIncrementId($params['cust_id_ext']);
         // FIXME: sanity check that this is the right order with our id ?
         // FIXME: may not have order yet, for purchase/AuthOnly
 
+        $actionMessage = "";
+
         if ($params['method'] == 'void') {
-            $this->_setState($order,
-                Mage_Sales_Model_Order::STATE_CANCELED);
-            return;
+            if ($order->getState() !=
+                Mage_Sales_Model_Order::STATE_CANCELED) {
+                $this->_setState($order,
+                    Mage_Sales_Model_Order::STATE_CANCELED);
+                $actionMessage = 'order canceled by postback.';
+            }
         } else if ($params['method'] == 'purchase') {
             if ($params['inv_status'] == 'AuthOnly') {
                 $order = $this->_convertQuote($params['cust_id_ext']);
-                return;
             } else if ($params['inv_status'] == 'Auth') {
-                $this->_setState($order,
-                    Mage_Sales_Model_Order::STATE_PROCESSING);
-                return;
+                if ($order->getState() !=
+                    Mage_Sales_Model_Order::STATE_PROCESSING) {
+                    $this->_setState($order,
+                        Mage_Sales_Model_Order::STATE_PROCESSING);
+                    $actionMessage = 'order loan approved, ready to ship.';
+                }
             } else {
                 Mage::log('Unknown inv_action ' . $params['inv_action']);
             }
@@ -201,6 +210,14 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             Mage::log('Unknown method ' . $params['method']);
         }
 
+        $order->addStatusToHistory($order->getStatus(), $postbackMessage,
+            false);
+        if ($actionMessage) {
+            $order->addStatusToHistory($order->getStatus(),
+                "Credex: $actionMessage",
+                false);
+        }
+        $order->save();
 
     }
 
@@ -296,6 +313,22 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         $order->sendNewOrderEmail();
 
         $quote->setIsActive(false)->save();
+
+        /* FIXME: get our credex data
+        $custId = $order->getCredexCustId();
+        $invId = $order->getCredexInvId();
+        */
+
+        Mage::log("Credex: convert to order for cust_id_ext $reservedOrderId " .
+        //          ", Credex cust_id $custId, inv_id $invId");
+        "");
+
+
+        /* add order comment */
+        $order->addStatusToHistory($order->getStatus(),
+            "Credex: order created; hold off shipping for loan verification.",
+            false);
+        $order->save();
 
         return $order;
     }
