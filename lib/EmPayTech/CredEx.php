@@ -102,7 +102,7 @@ class CredEx_Magento extends CredEx
         $key = "gateway_url_$platform";
         $url = $payment->getConfigData($key);
         if (!$url) {
-            Mage::log("Credex: specify $key in the configuration");
+            $this->log("specify $key in the configuration");
             $errors = TRUE;
         }
 
@@ -163,8 +163,8 @@ class CredEx_Magento extends CredEx
         $response = parent::request($fields);
 
         if ($response->status_code == "GW_NOT_AUTH") {
-            Mage::log("Credex: " . $response->status_string);
-            Mage::log("Credex: Please verify your authentication details.");
+            $this->log("response status: " . $response->status_string);
+            $this->log("Please verify your authentication details.");
             $this->misconfigured();
         }
 
