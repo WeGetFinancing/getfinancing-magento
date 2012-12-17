@@ -77,14 +77,14 @@ class CredEx
 
 class CredEx_Magento extends CredEx
 {
-    public function __construct($payment) {
+    public function __construct($paymentMethod) {
 
         $errors = FALSE;
 
         $keys = array("platform", "merch_id", "username", "password");
 
         foreach ($keys as $key) {
-            $$key = $payment->getConfigData($key);
+            $$key = $paymentMethod->getConfigData($key);
             if (!$$key) {
                 $this->log("specify $key in the configuration");
                 $errors = TRUE;
@@ -100,7 +100,7 @@ class CredEx_Magento extends CredEx
         if ($errors) $this->misconfigured();
 
         $key = "gateway_url_$platform";
-        $url = $payment->getConfigData($key);
+        $url = $paymentMethod->getConfigData($key);
         if (!$url) {
             $this->log("specify $key in the configuration");
             $errors = TRUE;
