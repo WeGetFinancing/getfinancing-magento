@@ -111,8 +111,6 @@
 <!-- our default values -->
                 <gateway_url_staging>https://api-test.credex.net:10001/gateway/transact.cfm</gateway_url_staging>
                 <platform>staging</platform>
-                <cctypes>AE,VI,MC,DI</cctypes>
-                <payment_action>authorize</payment_action>
                 <allowspecific>0</allowspecific>
             </credex>
          </payment>
