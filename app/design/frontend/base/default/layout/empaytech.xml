@@ -29,9 +29,27 @@
 -->
         </reference>
     </credex_standard_redirect>
+
     <credex_standard_success>
         <reference name="content">
             <block type="core/template" name="credex_standard_success" template="empaytech/credex/success.phtml" />
         </reference>
     </credex_standard_success>
+
+    <credex_counter_landing>
+        <reference name="content">
+            <block type="core/template" name="credex_counter_landing" template="empaytech/credex/landing.phtml" />
+        </reference>
+    </credex_counter_landing>
+
+    <checkout_onepage_index>
+        <reference name="right">
+            <block type="core/template" name="credex_counter_payment" after="checkout.onepage.payment" template="empaytech/credex/payment.phtml">
+        </block>
+    </reference>
+    </checkout_onepage_index>
+
+    <cms_index_index>
+        <update handle="credex_counter_landing" />
+    </cms_index_index>
 </layout>

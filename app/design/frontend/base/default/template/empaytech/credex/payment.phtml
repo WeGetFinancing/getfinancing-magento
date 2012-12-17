@@ -1,0 +1,36 @@
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
+</script>
+<script type="text/javascript">
+    jQuery.noConflict();
+</script>
+<script type="text/javascript"
+        src="https://partner.credex.net/libs/1.0/credex.js">
+</script>
+<script type="text/javascript">
+<?php
+    /* ajax listener inspired by
+     * http://store.fooman.co.nz/extensions/magento-extension-googleanalyticsplus.html
+     */
+    require_once 'EmPayTech/CredEx.php';
+
+    $paymentMethod = Mage::getSingleton('credex/paymentMethod');
+
+    $credex = new CredEx_Magento($paymentMethod);
+?>
+    if (Ajax.Responders) {
+        Ajax.Responders.register({onComplete: function (response) {
+            // console.log('response url: ' + response.url);
+            if (response.url.include('toStep=payment')) {
+                // console.log('moved to payment step');
+
+                Credex.counter({
+                    stage: 'payment',
+                    dataspace: '<?php echo $credex->getDataspace(); ?>',
+                    merchantID: '<?php echo $credex->merch_id; ?>'
+                });
+
+            }
+        }});
+    }
+</script>

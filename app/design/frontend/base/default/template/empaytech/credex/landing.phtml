@@ -1,0 +1,23 @@
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
+</script>
+<script type="text/javascript">
+    jQuery.noConflict();
+</script>
+<script type="text/javascript"
+        src="https://partner.credex.net/libs/1.0/credex.js">
+</script>
+<script type="text/javascript">
+<?php
+    require_once 'EmPayTech/CredEx.php';
+
+    $paymentMethod = Mage::getSingleton('credex/paymentMethod');
+
+    $credex = new CredEx_Magento($paymentMethod);
+?>
+    Credex.counter({
+        stage: 'landing',
+        dataspace: '<?php echo $credex->getDataspace(); ?>',
+        merchantID: '<?php echo $credex->merch_id; ?>'
+    });
+</script>
