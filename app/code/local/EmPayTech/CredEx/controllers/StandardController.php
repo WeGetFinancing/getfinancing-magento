@@ -217,7 +217,7 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
      * Called on AuthOnly/purchase callback and through onComplete callback
      * from box
      */
-    private function _convertQuote($reservedOrderId)
+    private function _convertQuote($reservedOrderId) // , $custId, $invId)
     {
        // LOOK FOR EXISTING ORDER TO AVOID DUPLICATES
         $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
