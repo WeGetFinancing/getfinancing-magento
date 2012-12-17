@@ -16,6 +16,18 @@
     </phpunit>
 
     <global>
+<!-- FIXME: this was a test to convert our attributes from quote to order
+        <fieldsets>
+            <sales_convert_quote>
+                <credex_cust_id>
+                    <to_order>*</to_order>
+                </credex_cust_id>
+                <credex_inv_id>
+                    <to_order>*</to_order>
+                </credex_inv_id>
+            </sales_convert_quote>
+        </fieldsets>
+-->
         <helpers>
             <credex>
                 <class>EmPayTech_CredEx_Core_Helper</class>
