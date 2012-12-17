@@ -131,10 +131,12 @@ class CredEx_Magento extends CredEx
         $billingaddress = $quote->getBillingAddress();
         $shippingaddress = $quote->getShippingAddress();
         $totals = number_format($quote->getGrandTotal(), 2, '.', '');
-        $this->log("request for total amount $totals");
 
         $email = $quote->getCustomerEmail();
         $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
+
+        $this->log("request for total amount $totals and cust_id_ext $cust_id_ext");
+
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
