@@ -14,7 +14,8 @@ getting a loan.
     $session = Mage::getSingleton('checkout/session');
     $url = $session->getApplicationURL();
     if (! $url) {
-        /* use a test url so we can refresh this page */
+        /* FIXME: use a test url so we can refresh this page */
+        Mage::log('THOMAS: No url in session, faking it');
         $url = "https://partner-test.credex.net/partner-test/lc/info/5916db59362013d4391982a270ef87fa";
     }
 ?>
