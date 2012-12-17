@@ -3,6 +3,6 @@ Congratulations.
 You have applied for a loan through Credex.
 <?php
     $session = Mage::getSingleton('checkout/session');
-    $orderId = $session->getCredexIncrementId();
+    $orderId = $session->getCredexCustIdExt();
     echo "Your order id is $orderId\n";
 ?>

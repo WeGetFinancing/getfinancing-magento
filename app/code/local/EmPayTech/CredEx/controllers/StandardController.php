@@ -71,24 +71,15 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         }
     }
 
-     /**
-     * When a customer chooses CredEx on Checkout/Payment page
+    /**
+     * When a customer chooses CredEx on Checkout/Payment page,
+     * we open up a lightbox with the credex box
      *
      */
     public function redirectAction()
     {
-        Mage::log('THOMAS: redirectAction');
-        //$session = Mage::getSingleton('checkout/session');
-        //$session->setCredExStandardQuoteId($session->getQuoteId());
-//        $this->getResponse()->setBody($this->getLayout()->createBlock('credex/standard_redirect')->toHtml());
-        //$url = $session->getApplicationURL();
-        //Mage::log("THOMAS: url $url");
         $this->loadLayout();
         $this->renderLayout();
-//        Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
-//        var_dump(Mage::getSingleton('core/layout')->getUpdate()->getHandles());
-//exit("bailing early at ".__LINE__." in ".__FILE__);
-//        $this->getResponse()->setBody("Magento welcome to your custom module");
     }
 
     /**
@@ -96,22 +87,10 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
      */
     public function successAction()
     {
-        Mage::log('THOMAS: successAction');
-
         $session = Mage::getSingleton('checkout/session');
 
         $reservedOrderId = $session->getCredexCustIdExt();
         $order = $this->_convertQuote($reservedOrderId);
-
-        $incrementId = $order->getIncrementId();
-        $session->setCredexIncrementId($incrementId);
-        Mage::log('THOMAS: got order increment id ' . $incrementId);
-
-//        $state = Mage_Sales_Model_Order::STATE_PROCESSING;
-//        $order->setState($state);
-//        $order->setStatus('processing');
-//        $order->sendNewOrderEmail();
-//        $order->save();
 
         $this->loadLayout();
         $this->renderLayout();
@@ -134,7 +113,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             ->setBody($text);
     }
 
-
     private function _validateParam($key, $value)
     {
         $allowed = array(
@@ -145,7 +123,7 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
         if (! in_array($value, $allowed[$key])) {
             $msg = "unknown $key $value";
-            Mage::log('credex: transact: ' . $msg);
+            Mage::log('Credex: transact: ' . $msg);
             $this->_respond($msg . "\n");
             return False;
         }
@@ -156,7 +134,6 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
     public function transactAction()
     {
         $request = $this->getRequest();
-        // $method = $request->getMethod();
 
         if (! $request->isPost()) {
             $this->_respondUnauthorized();
@@ -204,10 +181,10 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
                     $actionMessage = 'order loan approved, ready to ship.';
                 }
             } else {
-                Mage::log('Unknown inv_action ' . $params['inv_action']);
+                Mage::log('Credex: Unknown inv_action ' . $params['inv_action']);
             }
         } else {
-            Mage::log('Unknown method ' . $params['method']);
+            Mage::log('Credex: Unknown method ' . $params['method']);
         }
 
         $order->addStatusToHistory($order->getStatus(), $postbackMessage,
@@ -221,11 +198,11 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 
     }
 
+    // FIXME: state and status are not the same; status is under state
     private function _setState($order, $state) {
         $oldState = $order->getState();
         $order->setState($state);
         $order->setStatus($state);
-        Mage::log("THOMAS: changed state from $oldState to $state");
         $order->save();
     }
 
@@ -240,7 +217,8 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
         if ($order->getId()) {
             print_r($order);
-            Mage::log('THOMAS: success: already have order with id ' . $reservedOrderId);
+            Mage::log('Credex: convertQuote: we already have order with id ' .
+                $reservedOrderId);
             return $order; // FIXME: finish properly
         }
 
