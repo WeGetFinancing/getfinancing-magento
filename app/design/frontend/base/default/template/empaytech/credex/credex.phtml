@@ -12,7 +12,7 @@ getting a loan.
 <?php
 
     $session = Mage::getSingleton('checkout/session');
-    $url = $session->getApplicationURL();
+    $url = $session->getCredexApplicationURL();
     if (! $url) {
         /* FIXME: use a test url so we can refresh this page */
         Mage::log('THOMAS: No url in session, faking it');

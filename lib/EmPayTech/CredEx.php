@@ -169,9 +169,19 @@ class CredEx_Magento extends CredEx
         }
 
         if ($response->status_code == "APPROVED") {
-            $this->getSession()->setApplicationURL((string) $response->udf02);
-            $this->getSession()->setCustId((string) $response->cust_id);
-            $this->getSession()->setInvId((string) $response->inv_id);
+            /* store application url in session so our phtml can use them */
+            $this->getSession()->setCredexApplicationURL((string) $response->udf02);
+            $this->getSession()->setCredexCustId((string) $response->cust_id);
+            $this->getSession()->setCredexInvId((string) $response->inv_id);
+            /* store response values on quote too */
+            // FIXME: these don't actually persist at all when saved
+            //        get them from postback instead
+            /*
+            $quote->setCredexApplicationURL((string) $response->udf02);
+            $quote->setCredexCustId((string) $response->cust_id);
+            $quote->setCredexInvId((string) $response->inv_id);
+            $quote->save();
+            */
         } else {
             /* throwing an exception makes us stay on this page so we can repeat */
             Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));
