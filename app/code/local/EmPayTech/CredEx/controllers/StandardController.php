@@ -287,7 +287,7 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
         $order->setPayment($payment);
         $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
 
-        // place sets is to STATE_PROCESSING
+        // place sets state to STATE_PROCESSING
         $order->place();
         $this->_setState($order,
             Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW);
