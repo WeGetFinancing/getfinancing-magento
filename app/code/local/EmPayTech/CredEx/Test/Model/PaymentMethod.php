@@ -111,7 +111,7 @@ EOT;
 
         $this->assertEquals(
             "GW_NOT_AUTH",
-            $this->model->parseResponse($xmlString)->status_code
+            $this->credex->parseResponse($xmlString)->status_code
         );
 
         return $this;
@@ -131,7 +131,7 @@ EOT;
 
         $this->assertEquals(
             "GW_MISSING_FIELD",
-            $this->model->parseResponse($xmlString)->status_code
+            $this->credex->parseResponse($xmlString)->status_code
         );
 
         return $this;
@@ -151,11 +151,11 @@ EOT;
 
         $this->assertEquals(
             "APPROVED",
-            $this->model->parseResponse($xmlString)->status_code
+            $this->credex->parseResponse($xmlString)->status_code
         );
         $this->assertEquals(
             "5005.00",
-            $this->model->parseResponse($xmlString)->inv_value_requested
+            $this->credex->parseResponse($xmlString)->inv_value_requested
         );
 
 
