@@ -1,0 +1,4 @@
+config:
+  default/payment/credex/username: username
+  default/payment/credex/password: password
+  default/payment/credex/merch_id: test

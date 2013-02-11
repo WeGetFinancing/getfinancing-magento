@@ -20,12 +20,15 @@
  * @doNotIndexAll
  */
 
+require_once 'EmPayTech/CredEx.php';
+
 class EmPayTech_Credex_Test_Model_PaymentMethod extends EcomDev_PHPUnit_Test_Case
 {
     /**
      * @var EmPayTech_CredEx_Model_PaymentMethod
      */
     protected $model = null;
+    protected $credex = null;
 
     /**
      * Initializes model under test and disables events
@@ -39,6 +42,8 @@ class EmPayTech_Credex_Test_Model_PaymentMethod extends EcomDev_PHPUnit_Test_Cas
         parent::setUp();
         $this->model = Mage::getModel('credex/paymentMethod');
         $this->app()->disableEvents();
+
+        $this->credex = new CredEx_Magento($this->model);
     }
 
     /**
@@ -74,6 +79,7 @@ class EmPayTech_Credex_Test_Model_PaymentMethod extends EcomDev_PHPUnit_Test_Cas
     /**
      * Test for parseResponse
      *
+     * @loadFixture
      * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
      */
     public function testParseResponseNoAccepts()
@@ -85,7 +91,7 @@ EOT;
 
         $this->assertEquals(
             "GW_UNSUPPORTED_FORMAT",
-            $this->model->parseResponse($xmlString)->status_code
+            $this->credex->parseResponse($xmlString)->status_code
         );
 
         return $this;
@@ -155,7 +161,5 @@ EOT;
 
         return $this;
     }
-
-
 }
 ?>
