@@ -158,6 +158,9 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
             ->loadByIncrementId($params['cust_id_ext']);
         // FIXME: sanity check that this is the right order with our id ?
         // FIXME: may not have order yet, for purchase/AuthOnly
+        if (!$order->getId()) {
+            Mage::throwException("The order for cust_id_ext " . $params['cust_id_ext'] . " could not be found.");
+        }
 
         $actionMessage = "";
 
