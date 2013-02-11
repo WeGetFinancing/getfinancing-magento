@@ -33,21 +33,28 @@ jQuery(document).ready(function() {
                 console.log('Credex: moved to payment step');
 
             // add credex image and faq link
-            // FIXME: use credex.js to do this
             // FIXME: when reaching this step, magento resets the contents of input
             var input = jQuery('#p_method_credex');
-            console.log(input);
             var dt = input.parent();
-            jQuery(dt).append('<a class="colorbox-iframe" href="http://www.credex.net/faq" style="outline: none;"><img src="https://partner.credex.net/media/1.0/buttons/png/btn_credex_200x36.png" style="vertical-align: middle;"></a>');
-            jQuery('.colorbox-iframe').colorbox({
-                iframe: true, width: '80%', height: '80%' });
+            jQuery(dt).append('<div id="credex-faq-parent" ' .
+                'style="display: inline-block; vertical-align: middle;" />');
 
+            /* FIXME: calculate platformURL to lc/info/visits instead so
+             *        we can use against other platforms than production */
+            CredexSimple.init({
+                dataspace: '<?php echo $credex->getDataspace(); ?>',
+                merchantID: '<?php echo $credex->merch_id; ?>'
+            });
 
-                Credex.counter({
-                    stage: 'payment',
-                    dataspace: '<?php echo $credex->getDataspace(); ?>',
-                    merchantID: '<?php echo $credex->merch_id; ?>'
-                });
+            console.log('add faq link');
+            CredexSimple.addFaqLink({
+                src: 'media/1.0/buttons/png/btn_credex_200x36.png',
+                selector: '#credex-faq-parent'
+            });
+            console.log('added faq link');
+
+            CredexSimple.counter('payment');
+
 
             }
         }});
