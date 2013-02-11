@@ -122,8 +122,13 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         return $this;
     }
 
+    /**
+     * @loadFixture
+     */
     public function testTransactPost()
     {
+        $this->app()->disableEvents();
+
         $post = 'function=transact&inv_status=Auth&method=void&inv_id=0991dfd815ad17e530d88728ce046c4c&crl_id=646db422798711e19d620026822d76da&version=0.3&cust_id_ext=1';
         $this->_post($post);
 
@@ -135,5 +140,6 @@ class EmPayTech_Credex_Test_Controller_StandardController extends EcomDev_PHPUni
         $this->_assertResponseBodyIs('');
 
         return $this;
+        $this->app()->enableEvents();
     }
 }

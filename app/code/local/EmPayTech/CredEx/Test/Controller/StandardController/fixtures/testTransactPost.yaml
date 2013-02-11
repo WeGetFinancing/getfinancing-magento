@@ -1,0 +1,5 @@
+tables:
+  sales/order:
+    - increment_id: 1
+    - state: 1
+    - data: 1
