@@ -18,6 +18,7 @@
 
 /**
  * @doNotIndexAll
+ * @loadFixture config
  */
 
 require_once 'EmPayTech/CredEx.php';
@@ -79,7 +80,6 @@ class EmPayTech_Credex_Test_Model_PaymentMethod extends EcomDev_PHPUnit_Test_Cas
     /**
      * Test for parseResponse
      *
-     * @loadFixture
      * @covers EmPayTech_CredEx_Model_PaymentMethod::parseResponse
      */
     public function testParseResponseNoAccepts()
