@@ -124,6 +124,8 @@
                 <gateway_url_staging>https://api-test.credex.net:10001/gateway/transact.cfm</gateway_url_staging>
                 <platform>staging</platform>
                 <allowspecific>0</allowspecific>
+                <min_order_total>1000</min_order_total>
+                <max_order_total>35000</max_order_total>
             </credex>
          </payment>
     </default>
