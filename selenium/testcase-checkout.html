@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="https://merchant-test.getfinancing.com/merchant-test/" />
+<title>MerchantRightSSN</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">MerchantRightSSN</td></tr>
+</thead><tbody>
+<tr>
+	<td>deleteAllVisibleCookies</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/index.php</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log In</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=email</td>
+	<td>mary@email.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=pass</td>
+	<td>marybernard</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=send2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=search</td>
+	<td>Credex</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=button.button.btn-cart</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//button[@type='button'])[5]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#billing-buttons-container &gt; button.button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//li[@id='opc-shipping_method'] //div[@class='step a-item']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//li[@id='opc-shipping_method' and @class='section allow active']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#shipping-method-buttons-container &gt; button.button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//li[@id='opc-payment' and @class='section allow active']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=p_method_credex</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#payment-buttons-container &gt; button.button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//iframe[@name=&quot;popup&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>popup</td>
+	<td></td>
+</tr>
+<!--Credex box pops up-->
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=id_ssn4</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=id_ssn4</td>
+	<td>6220</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=id_agree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=submit-id-btn_find</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//html/body/div/div[3]/div/h2</td>
+	<td>Complete the form and accept the offer.</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=id_salary_current</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=id_salary_current</td>
+	<td>100000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=submit-id-btn_find</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//html/body/div/div[3]/div/h2</td>
+	<td>You have been pre-approved for a loan.</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//html/body/div/div[3]/div/h2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>name=offer_index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td></td>
+	<td>The proceeds will be</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=id_agree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=id_agree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=submit-id-btn_complete</td>
+	<td></td>
+</tr>
+<!--LendingClub popup pops up-->
+<tr>
+	<td>waitForPopUp</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectPopUp</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>master_nextButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=master_nextButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=master_getYourRateButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=br-button-defaultloan</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=master_getLoanTermsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=master_getBankAccountButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=master_doneButton</td>
+	<td></td>
+</tr>
+<!--Back to Credex box-->
+<tr>
+	<td>assertTextPresent</td>
+	<td></td>
+	<td>You are on your way</td>
+</tr>
+<tr>
+	<td>close</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//html/body/div/div[3]/div/h1</td>
+	<td>Last step and you are done!</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id_routing</td>
+	<td>123456789</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id_account</td>
+	<td>123456789</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id=&quot;finalize&quot;]</td>
+	<td></td>
+</tr>
+<!--Back to Magento-->
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Congratulations. You have applied for a loan through Credex. Your order id is</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log Out</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/index.php</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
