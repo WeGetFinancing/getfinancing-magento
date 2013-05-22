@@ -9,3 +9,14 @@ modman clone magento-credex gitolite@git.credex.us:dev/magento
 Unit tests
 ----------
 phpunit --group EmPayTech_CredEx UnitTests.php
+
+Activating the module
+---------------------
+ - Go to the admin backoffice
+ - System > Configuration
+ - Sales > Payment Methods
+ - Under Credex:
+   - Set Enabled to YES
+   - Fill in Merchant ID
+   - Fill in username
+   - Fill in password
