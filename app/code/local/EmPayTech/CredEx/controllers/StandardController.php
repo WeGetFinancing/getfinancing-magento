@@ -287,7 +287,14 @@ class EmPayTech_CredEx_StandardController extends Mage_Core_Controller_Front_Act
 //            ->setTransactionId($this->getGoogleOrderNumber())
             ->setIsTransactionClosed(false);
         $order->setPayment($payment);
-        $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+        $version = Mage::getVersion();
+	if (version_compare ($version, '1.5.0', '<')) {
+            $method = new ReflectionMethod('Mage_Sales_Model_Order_Payment', '_addTransaction');
+            $method->setAccessible(true);
+            $method->invoke($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+        } else {
+            $payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+        }
 
         // place sets state to STATE_PROCESSING
         $order->place();
