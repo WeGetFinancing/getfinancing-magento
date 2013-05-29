@@ -2,9 +2,9 @@
 <layout version="0.1.0">
     <default>
     </default>
-    <credex_standard_redirect>
+    <getfinancing_standard_redirect>
         <reference name="content">
-            <block type="core/template" name="credex_standard_redirect" template="empaytech/credex/redirect.phtml" />
+            <block type="core/template" name="getfinancing_standard_redirect" template="empaytech/getfinancing/redirect.phtml" />
         </reference>
         <reference name="head">
 <!-- FIXME: this is one way to get jquery loaded in the head and not
@@ -28,28 +28,28 @@
             </action>
 -->
         </reference>
-    </credex_standard_redirect>
+    </getfinancing_standard_redirect>
 
-    <credex_standard_success>
+    <getfinancing_standard_success>
         <reference name="content">
-            <block type="core/template" name="credex_standard_success" template="empaytech/credex/success.phtml" />
+            <block type="core/template" name="getfinancing_standard_success" template="empaytech/getfinancing/success.phtml" />
         </reference>
-    </credex_standard_success>
+    </getfinancing_standard_success>
 
-    <credex_counter_landing>
+    <getfinancing_counter_landing>
         <reference name="content">
-            <block type="core/template" name="credex_counter_landing" template="empaytech/credex/landing.phtml" />
+            <block type="core/template" name="getfinancing_counter_landing" template="empaytech/getfinancing/landing.phtml" />
         </reference>
-    </credex_counter_landing>
+    </getfinancing_counter_landing>
 
     <checkout_onepage_index>
         <reference name="right">
-            <block type="core/template" name="credex_counter_payment" after="checkout.onepage.payment" template="empaytech/credex/payment.phtml">
+            <block type="core/template" name="getfinancing_counter_payment" after="checkout.onepage.payment" template="empaytech/getfinancing/payment.phtml">
         </block>
     </reference>
     </checkout_onepage_index>
 
     <cms_index_index>
-        <update handle="credex_counter_landing" />
+        <update handle="getfinancing_counter_landing" />
     </cms_index_index>
 </layout>

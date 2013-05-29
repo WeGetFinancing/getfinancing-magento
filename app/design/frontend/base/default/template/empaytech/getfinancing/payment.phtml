@@ -1,0 +1,63 @@
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
+</script>
+<script type="text/javascript">
+    jQuery.noConflict();
+</script>
+<script type="text/javascript"
+        src="https://partner.getfinancing.com/libs/1.0/getfinancing.js">
+</script>
+<link rel="stylesheet" type="text/css"
+      href="https://partner.getfinancing.com/libs/1.0/colorbox/colorbox.css">
+</script>
+<script type="text/javascript"
+        src="https://partner.getfinancing.com/libs/1.0/colorbox/jquery.colorbox-min.js">
+</script>
+
+<script type="text/javascript">
+<?php
+    /* ajax listener inspired by
+     * http://store.fooman.co.nz/extensions/magento-extension-googleanalyticsplus.html
+     */
+    require_once 'EmPayTech/GetFinancing.php';
+
+    $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');
+    $getfinancing = new GetFinancing_Magento($paymentMethod);
+?>
+
+jQuery(document).ready(function() {
+    if (Ajax.Responders) {
+        Ajax.Responders.register({onComplete: function (response) {
+            // console.log('response url: ' + response.url);
+            if (response.url.include('toStep=payment')) {
+                console.log('GetFinancing: moved to payment step');
+
+            // add getfinancing image and faq link
+            // FIXME: when reaching this step, magento resets the contents of input
+            var input = jQuery('#p_method_getfinancing');
+            var dt = input.parent();
+            jQuery(dt).append('<div id="getfinancing-faq-parent" ' .
+                'style="display: inline-block; vertical-align: middle;" />');
+
+            /* FIXME: calculate platformURL to lc/info/visits instead so
+             *        we can use against other platforms than production */
+            GetFinancingSimple.init({
+                dataspace: '<?php echo $getfinancing->getDataspace(); ?>',
+                merchantID: '<?php echo $getfinancing->merch_id; ?>'
+            });
+
+            console.log('add faq link');
+            GetFinancingSimple.addFaqLink({
+                src: 'media/1.0/buttons/png/btn_getfinancing_200x36.png',
+                selector: '#getfinancing-faq-parent'
+            });
+            console.log('added faq link');
+
+            GetFinancingSimple.counter('payment');
+
+
+            }
+        }});
+    }
+});
+</script>

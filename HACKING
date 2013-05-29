@@ -4,10 +4,10 @@ Setting up
 in your magento tree:
 
 modman init
-modman clone magento-credex gitolite@git.credex.us:dev/magento
+modman clone magento-getfinancing gitolite@git.credex.us:dev/magento-getfinancing
 
 Unit tests
 ----------
-phpunit --group EmPayTech_CredEx UnitTests.php
+phpunit --group EmPayTech_GetFinancing UnitTests.php
 
-Unit tests do not work with 1.4
+Unit tests do not work with Magento 1.4 and below

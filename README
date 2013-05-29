@@ -3,7 +3,7 @@ Activating the module
  - Go to the admin backoffice
  - System > Configuration
  - Sales > Payment Methods
- - Under Credex:
+ - Under GetFinancing:
    - Set Enabled to YES
    - Fill in Merchant ID
    - Fill in username

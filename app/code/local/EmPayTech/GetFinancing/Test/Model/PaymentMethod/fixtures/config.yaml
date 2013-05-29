@@ -1,0 +1,4 @@
+config:
+  default/payment/getfinancing/username: username
+  default/payment/getfinancing/password: password
+  default/payment/getfinancing/merch_id: test
