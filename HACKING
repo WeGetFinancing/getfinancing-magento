@@ -8,6 +8,9 @@ modman clone magento-getfinancing gitolite@git.credex.us:dev/magento-getfinancin
 
 Unit tests
 ----------
-phpunit --group EmPayTech_GetFinancing UnitTests.php
+- add module EcomDev_PhpUnit
+  This deploys a symlink for UnitTests.php
+- run
+  phpunit --group EmPayTech_GetFinancing UnitTests.php
 
 Unit tests do not work with Magento 1.4 and below
