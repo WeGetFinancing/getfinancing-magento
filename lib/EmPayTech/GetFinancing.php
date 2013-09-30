@@ -130,9 +130,11 @@ class GetFinancing_Magento extends GetFinancing
         Mage::log("GetFinancing: $msg");
     }
 
-    private function misconfigured()
+    private function misconfigured($option = "")
     {
-        Mage::throwException(Mage::helper('paygate')->__('The web store has misconfigured the GetFinancing payment module.'));
+        if ($option)
+            $option = " (option $option)";
+        Mage::throwException(Mage::helper('paygate')->__("The web store has misconfigured the GetFinancing payment module${option}."));
     }
 
     /*
