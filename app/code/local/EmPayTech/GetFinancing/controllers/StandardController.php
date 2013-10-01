@@ -299,7 +299,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         // place sets state to STATE_PROCESSING
         $order->place();
         $this->_setState($order,
-            Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW);
+            Mage_Sales_Model_Order::STATE_HOLDED);
 
         $order->save();
         $order->sendNewOrderEmail();
