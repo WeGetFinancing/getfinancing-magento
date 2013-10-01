@@ -148,7 +148,13 @@ class GetFinancing_Magento extends GetFinancing
         $shippingaddress = $quote->getShippingAddress();
         $totals = number_format($quote->getGrandTotal(), 2, '.', '');
 
-        $email = $quote->getCustomerEmail();
+        $version = Mage::getVersion();
+        if (version_compare ($version, '1.5.0', '<')) {
+            $email = $billingaddress->getEmail();
+        } else {
+            $email = $quote->getCustomerEmail();
+        }
+
         $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
 
         $this->log("request for total amount $totals and cust_id_ext $cust_id_ext");
