@@ -208,7 +208,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     }
 
     /*
-     * Convert a quote to an order in state payment_review
+     * Convert a quote to an order in state holded (before: payment_review)
      * Called on AuthOnly/purchase callback and through onComplete callback
      * from box
      */
@@ -254,7 +254,9 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 //        $order->setExtOrderId($this->getGoogleOrderNumber());
 //        $order->setExtCustomerId($this->getData('root/buyer-id/VALUE'));
 
+        // In Magento 1.4, $order does not have getCustomerEmail
         if (!$order->getCustomerEmail()) {
+            $billing = $quote->getBillingAddress();
             $order->setCustomerEmail($billing->getEmail())
                 ->setCustomerPrefix($billing->getPrefix())
                 ->setCustomerFirstname($billing->getFirstname())
