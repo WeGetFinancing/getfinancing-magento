@@ -217,7 +217,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
        // LOOK FOR EXISTING ORDER TO AVOID DUPLICATES
         $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
         if ($order->getId()) {
-            print_r($order);
+            //print_r($order);
             Mage::log('GetFinancing: convertQuote: we already have order with id ' .
                 $reservedOrderId);
             return $order;
