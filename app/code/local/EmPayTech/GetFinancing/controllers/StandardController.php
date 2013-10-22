@@ -164,7 +164,10 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         // FIXME: sanity check that this is the right order with our id ?
         // FIXME: may not have order yet, for purchase/AuthOnly
         if (!$order->getId()) {
-            Mage::throwException("The order for cust_id_ext " . $params['cust_id_ext'] . " could not be found.");
+            $message = "The order for cust_id_ext "
+                . $params['cust_id_ext'] . " could not be found.";
+            Mage::log("GetFinancing: transact: $message");
+            Mage::throwException($message);
         }
 
         $actionMessage = "";
