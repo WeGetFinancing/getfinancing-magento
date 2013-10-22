@@ -304,7 +304,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             ->setIsTransactionClosed(false);
         $order->setPayment($payment);
         $version = Mage::getVersion();
-	if (version_compare ($version, '1.5.0', '<')) {
+        if (version_compare ($version, '1.5.0', '<')) {
             $method = new ReflectionMethod('Mage_Sales_Model_Order_Payment', '_addTransaction');
             $method->setAccessible(true);
             $method->invoke($payment, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
