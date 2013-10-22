@@ -149,10 +149,13 @@ class GetFinancing_Magento extends GetFinancing
         $totals = number_format($quote->getGrandTotal(), 2, '.', '');
 
         $version = Mage::getVersion();
+        $this->log("Magento version: $version");
         if (version_compare ($version, '1.5.0', '<')) {
             $email = $billingaddress->getEmail();
+            $this->log("Got email $email from billing address");
         } else {
             $email = $quote->getCustomerEmail();
+            $this->log("Got email $email from quote customer email");
         }
 
         $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
