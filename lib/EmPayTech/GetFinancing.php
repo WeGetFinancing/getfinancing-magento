@@ -192,7 +192,7 @@ class GetFinancing_Magento extends GetFinancing
         if ($response->status_code == "GW_NOT_AUTH") {
             $this->log("response status: " . $response->status_string);
             $this->log("Please verify your authentication details.");
-            $this->misconfigured();
+            $this->misconfigured("merch_id/username/password");
         }
 
         if ($response->status_code == "APPROVED") {
