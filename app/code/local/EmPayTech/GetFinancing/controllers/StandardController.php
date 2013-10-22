@@ -204,6 +204,10 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         }
         $order->save();
 
+        Mage::log('GetFinancing: transact: outputting OK');
+
+        print "OK\n";
+
     }
 
     // FIXME: state and status are not the same; status is under state
