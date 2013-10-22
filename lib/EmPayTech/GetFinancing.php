@@ -105,7 +105,7 @@ class GetFinancing_Magento extends GetFinancing
             }
         }
 
-        $platforms = array('staging', 'platform');
+        $platforms = array('staging', 'production');
         if (!in_array($platform, $platforms)) {
             $this->log("platform is set to unsupported value $platform");
             $errors = TRUE;
