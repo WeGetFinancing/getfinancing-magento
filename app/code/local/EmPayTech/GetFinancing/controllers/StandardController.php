@@ -134,6 +134,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $request = $this->getRequest();
 
         if (! $request->isPost()) {
+            Mage::log('GetFinancing: transact: not a POST');
             $this->_respondUnauthorized();
             return;
         }
@@ -141,12 +142,16 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $params = $request->getPost();
 
         foreach (array('function', 'inv_status', 'method') as $key) {
+            if (! array_key_exists ($key, $params)) {
+            Mage::log("GetFinancing: transact: missing key $key");
+                return;
+            }
             if (! $this->_validateParam($key, $params[$key])) {
                 return;
             }
         }
 
-        $postbackMessage = 'GetFinancing: received postback ' .
+        $postbackMessage = 'GetFinancing: transact: received postback ' .
             $params['function'] . '/' .
             $params['inv_status'] . '/' .
             $params['method'] .
@@ -182,10 +187,12 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
                     $actionMessage = 'order loan approved, ready to ship.';
                 }
             } else {
-                Mage::log('GetFinancing: Unknown inv_action ' . $params['inv_action']);
+                Mage::log('GetFinancing: transact: Unknown inv_action '
+                    . $params['inv_action']);
             }
         } else {
-            Mage::log('GetFinancing: Unknown method ' . $params['method']);
+            Mage::log('GetFinancing: transact: Unknown method '
+                . $params['method']);
         }
 
         $order->addStatusToHistory($order->getStatus(), $postbackMessage,
