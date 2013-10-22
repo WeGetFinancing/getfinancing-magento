@@ -16,3 +16,18 @@ Unit tests
   phpunit --group EmPayTech_GetFinancing UnitTests.php
 
 Unit tests do not work with Magento 1.4 and below
+
+
+Testing
+-------
+
+- the postback handler (transactAction) can be tested with curl; example:
+
+curl -X POST -d 'function=transact&crl_id=1202ddfe-3b4e-11e3-9e24-f23c91695a70&cust_id_ext=100000003&inv_id=f0d622abf4dacb4a470cbfaba3aedd40&inv_status=AuthOnly&version=0.3&method=purchase' -v http://magento1411.localhost/getfinancing/standard/transact
+
+- the popup handling (closing, redirect, ...) can be tested by browsing to:
+
+  http://magento1411.localhost/index.php/getfinancing/standard/redirect/
+
+  The redirect handler will work with a default session if no session is
+  active so behaviour can be tested.
