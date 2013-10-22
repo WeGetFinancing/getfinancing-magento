@@ -1,8 +1,13 @@
 Activating the module
 ---------------------
  - Go to the admin backoffice
- - System > Configuration
- - Sales > Payment Methods
+ - At the top, go to System > Configuration
+ - On the left, go to Sales > Payment Methods
+ - If Getfinancing does not show up:
+   - Flush the cache:
+     - System > Cache Management
+     - Click Flush Magento Cache
+ - On the left, go to Sales > Payment Methods
  - Under GetFinancing:
    - Set Enabled to YES
    - Fill in Merchant ID

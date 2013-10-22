@@ -6,6 +6,8 @@ in your magento tree:
 modman init
 modman clone magento-getfinancing gitolite@git.credex.us:dev/magento-getfinancing
 
+modman deploy magento-getfinancing
+
 Unit tests
 ----------
 - add module EcomDev_PhpUnit
