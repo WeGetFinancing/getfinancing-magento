@@ -47,16 +47,28 @@ getting a loan.
         jQuery('#getfinancing-message').text(
             'Payment aborted.  Redirecting you to the payment choice.');
         var failure = '<?php echo Mage::getUrl('checkout/onepage'); ?>';
+<?php
+    $version = Mage::getVersion();
+    if (version_compare ($version, '1.5.0', '<')) {
+?>
         // FIXME: if we redirect like this, we go to the start of the
         //        onpage checkout
-        //window.location = failure;
-
+        // FIXME: In 1.4.1.1, I get a TypeError on the console when doing
+        //        checkout.gotoSection:
+        //        TypeError: section.addClassName is not a function
+        window.location = failure;
+<?php
+    } else {
+?>
         // this one takes us back to the one page checkout and sets it to the
         // payment tab in the accordion
         jQuery('body').load(failure, {}, function () {
             // set the magento onepage checkout accordion to the payment section
             checkout.gotoSection('payment');
         });
+<?php
+    }
+?>
 
     };
     new GetFinancing(url, onComplete, onAbort);
