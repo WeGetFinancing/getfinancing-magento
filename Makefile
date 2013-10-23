@@ -5,7 +5,7 @@ PACKAGE=$(MODULE)-$(VERSION)
 
 all: $(PACKAGE).zip
 
-gitversion: app lib Makefile
+gitversion: app lib Makefile .
 	git describe > gitversion
 
 $(PACKAGE).zip: Makefile app lib modman gitversion
