@@ -214,6 +214,7 @@ class GetFinancing_Magento extends GetFinancing
                 $quote->setGetFinancingInvId((string) $response->inv_id);
                 $quote->save();
                 */
+                break;
             default:
                 /* throwing an exception makes us stay on this page so we can repeat */
                 $message = "Unhandled response status code " . $response->status_code;
