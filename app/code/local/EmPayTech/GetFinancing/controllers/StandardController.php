@@ -38,7 +38,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     }
 
     /**
-     * Get singleton with getfinancing strandard order transaction information
+     * Get singleton with getfinancing standard order transaction information
      *
      * @return EmPayTech_GetFinancing_Model_PaymentMethod
      */

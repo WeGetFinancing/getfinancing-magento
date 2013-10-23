@@ -156,6 +156,7 @@ class GetFinancing_Magento extends GetFinancing
         $billingaddress = $quote->getBillingAddress();
         $shippingaddress = $quote->getShippingAddress();
 
+        /* FIXME: Magento 1.4.0.1 seems to not have getCustomerEmail ? */
         $this->log("request: billing  email " . $billingaddress->getEmail());
         $this->log("request: shipping email " . $shippingaddress->getEmail());
         $this->log("request: quote    email " . $quote->getCustomerEmail());
