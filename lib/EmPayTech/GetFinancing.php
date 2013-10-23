@@ -211,7 +211,9 @@ class GetFinancing_Magento extends GetFinancing
             */
         } else {
             /* throwing an exception makes us stay on this page so we can repeat */
-            Mage::throwException(Mage::helper('paygate')->__('Payment capturing error.'));
+            $message = "Unhandled response status code " . $response->status_code;
+            Mage::log("GetFinancing: request: $message");
+            Mage::throwException($message);
         }
 
         return $response;
