@@ -149,18 +149,18 @@ class GetFinancing_Magento extends GetFinancing
         $totals = number_format($quote->getGrandTotal(), 2, '.', '');
 
         $version = Mage::getVersion();
-        $this->log("Magento version: $version");
+        $this->log("request: Magento version: $version");
         if (version_compare ($version, '1.5.0', '<')) {
             $email = $billingaddress->getEmail();
-            $this->log("Got email $email from billing address");
+            $this->log("request: Got email $email from billing address");
         } else {
             $email = $quote->getCustomerEmail();
-            $this->log("Got email $email from quote customer email");
+            $this->log("request: Got email $email from quote customer email");
         }
 
         $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
 
-        $this->log("request for total amount $totals and cust_id_ext $cust_id_ext");
+        $this->log("request: request for total amount $totals and cust_id_ext $cust_id_ext");
 
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
@@ -191,13 +191,13 @@ class GetFinancing_Magento extends GetFinancing
 
         switch ($response->status_code) {
             case "GW_NOT_AUTH":
-                $this->log("response status: " . $response->status_string);
-                $this->log("Please verify your authentication details.");
+                $this->log("request: response status: " . $response->status_string);
+                $this->log("request: Please verify your authentication details.");
                 $this->misconfigured("merch_id/username/password");
                 break;
             case "GW_MISSING_FIELD":
                 $message = "Missing a field in the request: " . $response->status_string;
-                Mage::log("GetFinancing: request: $message");
+                $this->log("request: $message");
                 Mage::throwException($message);
                 break;
             case "APPROVED":
@@ -218,7 +218,7 @@ class GetFinancing_Magento extends GetFinancing
             default:
                 /* throwing an exception makes us stay on this page so we can repeat */
                 $message = "Unhandled response status code " . $response->status_code;
-                Mage::log("GetFinancing: request: $message");
+                $this->log("request: $message");
                 Mage::throwException($message);
         }
 
