@@ -57,7 +57,8 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
         $reservedOrderId = $session->getGetFinancingCustIdExt();
         $quote->setReservedOrderId($reservedOrderId);
-        Mage::log('GetFinancing: request loan for cust_id_ext ' . $reservedOrderId);
+        Mage::log('GetFinancing: requestAction: request loan for cust_id_ext '
+            . $reservedOrderId);
 
         $getfinancing = new GetFinancing_Magento($this->getPaymentMethod());
 

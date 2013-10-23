@@ -144,23 +144,30 @@ class GetFinancing_Magento extends GetFinancing
     {
         $errors = FALSE;
 
-        $billingaddress = $quote->getBillingAddress();
-        $shippingaddress = $quote->getShippingAddress();
         $totals = number_format($quote->getGrandTotal(), 2, '.', '');
+        $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
+
+        $this->log("request: new request for total amount $totals"
+                   . " and cust_id_ext $cust_id_ext");
 
         $version = Mage::getVersion();
         $this->log("request: Magento version: $version");
-        if (version_compare ($version, '1.5.0', '<')) {
-            $email = $billingaddress->getEmail();
-            $this->log("request: Got email $email from billing address");
-        } else {
-            $email = $quote->getCustomerEmail();
-            $this->log("request: Got email $email from quote customer email");
-        }
 
-        $cust_id_ext = $quote->reserveOrderId()->getReservedOrderId();
+        $billingaddress = $quote->getBillingAddress();
+        $shippingaddress = $quote->getShippingAddress();
 
-        $this->log("request: request for total amount $totals and cust_id_ext $cust_id_ext");
+        $this->log("request: billing  email " . $billingaddress->getEmail());
+        $this->log("request: shipping email " . $shippingaddress->getEmail());
+        $this->log("request: quote    email " . $quote->getCustomerEmail());
+
+        $sparse_array = array(
+            $billingaddress->getEmail(),
+            $shippingaddress->getEmail(),
+            $quote->getCustomerEmail());
+        /* array_filter keeps truthy values, so throws out empty strings */
+        $email = current(array_filter($sparse_array));
+
+        $this->log("request: Got email $email");
 
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
