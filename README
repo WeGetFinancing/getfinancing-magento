@@ -13,3 +13,11 @@ Activating the module
    - Fill in Merchant ID
    - Fill in username
    - Fill in password
+
+Module notes
+------------
+ - when checking out with GetFinancing, the quote only gets converted to
+   an order after the loan has been preapproved.  This allows for easy
+   rollback to other payment methods in case the loan is not preapproved.
+ - the order is set to STATE_PAYMENT_REVIEW in Magento 1.4.1 and higher,
+   and STATE_HOLDED before that.
