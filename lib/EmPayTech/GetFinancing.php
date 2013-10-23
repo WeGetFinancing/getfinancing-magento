@@ -189,31 +189,36 @@ class GetFinancing_Magento extends GetFinancing
 
         $response = parent::request($fields);
 
-        if ($response->status_code == "GW_NOT_AUTH") {
-            $this->log("response status: " . $response->status_string);
-            $this->log("Please verify your authentication details.");
-            $this->misconfigured("merch_id/username/password");
-        }
-
-        if ($response->status_code == "APPROVED") {
-            /* store application url in session so our phtml can use them */
-            $this->getSession()->setGetFinancingApplicationURL((string) $response->udf02);
-            $this->getSession()->setGetFinancingCustId((string) $response->cust_id);
-            $this->getSession()->setGetFinancingInvId((string) $response->inv_id);
-            /* store response values on quote too */
-            // FIXME: these don't actually persist at all when saved
-            //        get them from postback instead
-            /*
-            $quote->setGetFinancingApplicationURL((string) $response->udf02);
-            $quote->setGetFinancingCustId((string) $response->cust_id);
-            $quote->setGetFinancingInvId((string) $response->inv_id);
-            $quote->save();
-            */
-        } else {
-            /* throwing an exception makes us stay on this page so we can repeat */
-            $message = "Unhandled response status code " . $response->status_code;
-            Mage::log("GetFinancing: request: $message");
-            Mage::throwException($message);
+        switch ($response->status_code) {
+            case "GW_NOT_AUTH":
+                $this->log("response status: " . $response->status_string);
+                $this->log("Please verify your authentication details.");
+                $this->misconfigured("merch_id/username/password");
+                break;
+            case "GW_MISSING_FIELD":
+                $message = "Missing a field in the request: " . $response->status_string;
+                Mage::log("GetFinancing: request: $message");
+                Mage::throwException($message);
+                break;
+            case "APPROVED":
+                /* store application url in session so our phtml can use them */
+                $this->getSession()->setGetFinancingApplicationURL((string) $response->udf02);
+                $this->getSession()->setGetFinancingCustId((string) $response->cust_id);
+                $this->getSession()->setGetFinancingInvId((string) $response->inv_id);
+                /* store response values on quote too */
+                // FIXME: these don't actually persist at all when saved
+                //        get them from postback instead
+                /*
+                $quote->setGetFinancingApplicationURL((string) $response->udf02);
+                $quote->setGetFinancingCustId((string) $response->cust_id);
+                $quote->setGetFinancingInvId((string) $response->inv_id);
+                $quote->save();
+                */
+            default:
+                /* throwing an exception makes us stay on this page so we can repeat */
+                $message = "Unhandled response status code " . $response->status_code;
+                Mage::log("GetFinancing: request: $message");
+                Mage::throwException($message);
         }
 
         return $response;
