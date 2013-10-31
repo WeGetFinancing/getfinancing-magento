@@ -94,34 +94,54 @@ class GetFinancing_Magento extends GetFinancing
 {
     public function __construct($paymentMethod) {
 
+        $this->configured = FALSE;
+
         $errors = FALSE;
+        $message = "";
 
         $keys = array("platform", "merch_id", "username", "password");
 
         foreach ($keys as $key) {
             $$key = $paymentMethod->getConfigData($key);
             if (!$$key) {
-                $this->log("specify $key in the configuration");
+                $message = "Please specify '$key' in the configuration.";
+                $errorkey = $key;
                 $errors = TRUE;
             }
         }
 
         $platforms = array('staging', 'production');
         if (!in_array($platform, $platforms)) {
-            $this->log("platform is set to unsupported value $platform");
+            $message = "platform is set to unsupported value '$platform'";
+            $errorkey = 'platform';
             $errors = TRUE;
         }
 
-        if ($errors) $this->misconfigured();
+        if ($errors) {
+            $this->log($message);
+            $this->misconfigured($message, $errorkey);
+
+            /* FIXME: can we return half-constructed ? */
+            return;
+        }
 
         $key = "gateway_url_$platform";
         $url = $paymentMethod->getConfigData($key);
         if (!$url) {
-            $this->log("specify $key in the configuration");
+            $message = "Please specify '$key' in the configuration of the payment method.";
             $errors = TRUE;
         }
 
-        if ($errors) $this->misconfigured();
+        if ($errors) {
+            $this->log($message);
+            $this->misconfigured($message, $key);
+
+            /* FIXME: can we return half-constructed ? */
+            return;
+        }
+
+
+        $this->configured = TRUE;
 
         parent::__construct($url, $merch_id, $username, $password);
     }
@@ -131,11 +151,15 @@ class GetFinancing_Magento extends GetFinancing
         Mage::log("GetFinancing: $msg");
     }
 
-    private function misconfigured($option = "")
+    private function misconfigured($message, $option = "")
     {
         if ($option)
-            $option = " (option $option)";
-        Mage::throwException(Mage::helper('paygate')->__("The web store has misconfigured the GetFinancing payment module${option}."));
+            $option = " (option '$option')";
+//        Mage::throwException(Mage::helper('paygate')->__("The web store has misconfigured the GetFinancing payment module${option}."));
+        $this->_adminnotification(
+            $title          = Mage::helper('getfinancing')->__('GetFinancing: the payment method is misconfigured.%s', $option),
+            $description    = $message
+        );
     }
 
     /*
@@ -200,9 +224,9 @@ class GetFinancing_Magento extends GetFinancing
 
         switch ($response->status_code) {
             case "GW_NOT_AUTH":
-                $this->log("request: response status: " . $response->status_string);
-                $this->log("request: Please verify your authentication details.");
-                $this->misconfigured("merch_id/username/password");
+                $message = "request: response status: " . $response->status_string;
+                $message .= "  Please verify your authentication details.";
+                $this->misconfigured($message, "merch_id/username/password");
                 break;
             case "GW_MISSING_FIELD":
                 $message = "Missing a field in the request: " . $response->status_string;
@@ -244,5 +268,32 @@ class GetFinancing_Magento extends GetFinancing
         return Mage::getSingleton('checkout/session');
     }
 
+
+    /**
+     * Create a Magento admin notification.
+     */
+    private function _adminnotification(
+        $title,
+        $description,
+        $severity = Mage_AdminNotification_Model_Inbox::SEVERITY_MAJOR
+    )
+    {
+        $this->log("creating admin notification $title");
+
+        $date = date('Y-m-d H:i:s');
+        /* We use parse because it's the only thing 1.4.0.1 has */
+        /* FIXME: can we set url to the payment method config ? */
+        Mage::getModel('adminnotification/inbox')->parse(array(
+            array(
+                'severity'      => $severity,
+                'date_added'    => $date,
+                'title'         => $title,
+                'description'   => $description,
+                'url'           => '',
+#                'url' => Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit/section/payment'),
+                'internal'      => true
+            )
+        ));
+    }
 
 }
