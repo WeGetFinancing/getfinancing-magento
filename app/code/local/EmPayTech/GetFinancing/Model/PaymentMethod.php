@@ -1,5 +1,7 @@
 <?php
 
+require_once 'EmPayTech/GetFinancing.php';
+
 /**
 * Our test CC module adapter
 */
