@@ -151,6 +151,16 @@ class EmPayTech_GetFinancing_Model_PaymentMethod extends Mage_Payment_Model_Meth
     {
         return Mage::getSingleton('checkout/session');
     }
+
+    public function isAvailable($quote = null)
+    {
+        $getfinancing = new GetFinancing_Magento($this);
+        $available = $getfinancing->configured;
+        $msg = sprintf('GetFinancing: PaymentMethod is %savailable',
+            $available ? '' : 'not ');
+        Mage::log($msg);
+        return $available;
+    }
 }
 
 ?>
