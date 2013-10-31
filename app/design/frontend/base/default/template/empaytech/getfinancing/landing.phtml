@@ -13,7 +13,10 @@
 
     $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');
 
-    $getfinancing = new GetFinancing_Magento($paymentMethod);
+    /* if not configured correctly, don't add the counter */
+    if ($paymentMethod->isAvailable()) {
+
+        $getfinancing = new GetFinancing_Magento($paymentMethod);
 ?>
     GetFinancing.counter({
         stage: 'landing',
@@ -21,3 +24,6 @@
         merchantID: '<?php echo $getfinancing->merch_id; ?>'
     });
 </script>
+<?php
+    }
+?>
