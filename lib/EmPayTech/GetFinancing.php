@@ -66,12 +66,19 @@ class GetFinancing
         //    "Accept: application/xml"
         //));
 //        curl_setopt($ch, CURLOPT_HEADER, 0); // DO NOT RETURN HTTP HEADERS
-        /* return contents of the call as a variable */
+        /* return contents of the call as a variable; otherwise it prints */
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 
         $result = curl_exec($ch);
+        $error = curl_error($ch);
         curl_close($ch);
+
+        if ($error) {
+            $msg = "curl_exec error: $error";
+            $this->log($msg);
+            Mage::throwException("GetFinancing: $msg");
+        }
 
         $response = $this->parseResponse($result);
 
