@@ -3,11 +3,15 @@ getting a loan.
 <script type="text/javascript"
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
 </script>
-<script type="text/javascript">
-    jQuery.noConflict();
-</script>
 <script type="text/javascript"
         src="https://partner.getfinancing.com/libs/1.0/getfinancing.js">
+</script>
+<?php
+  /* we restore the jQuery and friends symbol, but save a copy to use in
+   * our own jquery-using code */
+?>
+<script type="text/javascript">
+    var gfjQuery = jQuery.noConflict(true);
 </script>
 <?php
 
