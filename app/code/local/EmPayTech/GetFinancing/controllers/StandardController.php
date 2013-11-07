@@ -161,11 +161,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $postbackMessage = 'GetFinancing: postback: received postback ' .
             $params['function'];
         Mage::log($postbackMessage);
-        foreach ($params as $key => $value) {
-            if ($key != 'function') {
-                Mage::log("GetFinancing: postback: key $key value $value");
-            }
-        }
+        Mage::log("GetFinancing: postback: " . http_build_query($params));
 
         if (! $this->_validateKeys(array('function')))
             return;
