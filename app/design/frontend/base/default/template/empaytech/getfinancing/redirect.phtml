@@ -28,6 +28,10 @@ getting a loan.
 ?>
 <script type="text/javascript">
 
+    /* we make sure all code from getfinancing.js has the expected jQuery */
+    var oldjQuery = jQuery;
+    jQuery = gfjQuery;
+
     GetFinancing.counter({
         stage: 'payment',
         dataspace: '<?php echo $getfinancing->getDataspace(); ?>',
@@ -38,7 +42,7 @@ getting a loan.
     var onComplete = function() {
         // this is called when the user finishes all the steps and
         // gets loan preapproved
-        jQuery('#getfinancing-message').text(
+        gfjQuery('#getfinancing-message').text(
             'Loan preapproved.  Redirecting you to the success page.');
 
         var success = '<?php echo Mage::getUrl('getfinancing/standard/success'); ?>';
@@ -48,7 +52,7 @@ getting a loan.
         // this is called when the user closes the lightbox before
         // finishing all the steps
 
-        jQuery('#getfinancing-message').text(
+        gfjQuery('#getfinancing-message').text(
             'Payment aborted.  Redirecting you to the payment choice.');
         var failure = '<?php echo Mage::getUrl('checkout/onepage'); ?>';
 <?php
@@ -66,7 +70,7 @@ getting a loan.
 ?>
         // this one takes us back to the one page checkout and sets it to the
         // payment tab in the accordion
-        jQuery('body').load(failure, {}, function () {
+        gfjQuery('body').load(failure, {}, function () {
             // set the magento onepage checkout accordion to the payment section
             checkout.gotoSection('payment');
         });
@@ -76,5 +80,6 @@ getting a loan.
 
     };
     new GetFinancing(url, onComplete, onAbort);
+    jQuery = oldjQuery;
 </script>
 <h2 id="getfinancing-message"></h2>
