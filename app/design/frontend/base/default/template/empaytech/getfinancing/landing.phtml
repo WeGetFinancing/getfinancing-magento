@@ -1,9 +1,6 @@
 <script type="text/javascript"
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
 </script>
-<script type="text/javascript">
-    jQuery.noConflict();
-</script>
 <script type="text/javascript"
         src="https://partner.getfinancing.com/libs/1.0/getfinancing.js">
 </script>
@@ -23,6 +20,13 @@
         dataspace: '<?php echo $getfinancing->getDataspace(); ?>',
         merchantID: '<?php echo $getfinancing->merch_id; ?>'
     });
+</script>
+<?php
+  /* true in jQuery.noConflict(true) makes sure the jQuery symbol points to
+   * a potentially previously loaded version */
+?>
+<script type="text/javascript">
+    jQuery.noConflict(true);
 </script>
 <?php
     }
