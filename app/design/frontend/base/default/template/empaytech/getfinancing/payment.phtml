@@ -1,12 +1,17 @@
 <script type="text/javascript"
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
 </script>
-<script type="text/javascript">
-    jQuery.noConflict();
-</script>
 <script type="text/javascript"
         src="https://partner.getfinancing.com/libs/1.0/getfinancing.js">
 </script>
+<?php
+  /* we restore the jQuery and friends symbol, but save a copy to use in
+   * our own jquery-using code */
+?>
+<script type="text/javascript">
+    var gfjQuery = jQuery.noConflict(true);
+</script>
+
 <link rel="stylesheet" type="text/css"
       href="https://partner.getfinancing.com/libs/1.0/colorbox/colorbox.css">
 </link>
@@ -25,18 +30,21 @@
     $getfinancing = new GetFinancing_Magento($paymentMethod);
 ?>
 
-jQuery(document).ready(function() {
+gfjQuery(document).ready(function() {
     if (Ajax.Responders) {
         Ajax.Responders.register({onComplete: function (response) {
+            var oldjQuery = jQuery;
+            jQuery = gfjQuery;
+
             // console.log('response url: ' + response.url);
             if (response.url.include('toStep=payment')) {
                 console.log('GetFinancing: moved to payment step');
 
             // add getfinancing image and faq link
             // FIXME: when reaching this step, magento resets the contents of input
-            var input = jQuery('#p_method_getfinancing');
+            var input = gfjQuery('#p_method_getfinancing');
             var dt = input.parent();
-            jQuery(dt).append('<div id="getfinancing-faq-parent" ' +
+            gfjQuery(dt).append('<div id="getfinancing-faq-parent" ' +
                 'style="display: inline-block; vertical-align: middle;" />');
 
             /* FIXME: calculate platformURL to lc/info/visits instead so
@@ -57,6 +65,7 @@ jQuery(document).ready(function() {
 
 
             }
+            jQuery = oldjQuery;
         }});
     }
 });
