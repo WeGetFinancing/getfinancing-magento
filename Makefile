@@ -1,5 +1,5 @@
 MODULE=magento-getfinancing
-VERSION=1.7.2
+VERSION=1.7.3
 
 PACKAGE=$(MODULE)-$(VERSION)
 
