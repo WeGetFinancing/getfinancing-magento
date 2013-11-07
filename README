@@ -21,3 +21,6 @@ Module notes
    rollback to other payment methods in case the loan is not preapproved.
  - the order is set to STATE_PAYMENT_REVIEW in Magento 1.4.1 and higher,
    and STATE_HOLDED before that.
+ - Configure the postback url in the GetFinancing portal as
+   getfinancing/standard/postback
+   prefixed with your domain
