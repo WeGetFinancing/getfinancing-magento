@@ -112,44 +112,89 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             ->setBody($text);
     }
 
-    private function _validateParam($key, $value)
+    private function _validateKeys($keys) {
+        $request = $this->getRequest();
+        $params = $request->getPost();
+
+        foreach ($keys as $key) {
+            if (! array_key_exists ($key, $params)) {
+                $this->_error("missing key $key");
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+
+    private function _validateParams($allowed, $params)
     {
+        foreach ($params as $key => $value) {
+            if (array_key_exists($key, $allowed)) {
+                if (! in_array($value, $allowed[$key])) {
+                    $this->_error("unknown $key $value");
+                    return False;
+                }
+            }
+        }
+
+        return True;
+    }
+
+    /* log the postback error and respond with it */
+    private function _error($msg)
+    {
+        Mage::log('GetFinancing: postback: ' . $msg);
+        $this->_respond($msg . "\n");
+    }
+
+    public function postbackAction()
+    {
+        $request = $this->getRequest();
+
+        if (! $request->isPost()) {
+            Mage::log('GetFinancing: postback: not a POST');
+            $this->_respondUnauthorized();
+            return;
+        }
+
+        $params = $request->getPost();
+        $postbackMessage = 'GetFinancing: postback: received postback ' .
+            $params['function'];
+        Mage::log($postbackMessage);
+        foreach ($params as $key => $value) {
+            if ($key != 'function') {
+                Mage::log("GetFinancing: postback: key $key value $value");
+            }
+        }
+
+        if (! $this->_validateKeys(array('function')))
+            return;
+
+
+        switch ($params['function']) {
+            case 'transact':
+                return $this->_postbackTransact();
+            case 'update_customer':
+                return $this->_postbackUpdateCustomer();
+            default:
+                $this->_error("unknown function " . $params['function']);
+                return;
+        }
+    }
+
+    private function _postbackTransact()
+    {
+        $request = $this->getRequest();
+        $params = $request->getPost();
+
         $allowed = array(
             'function' => array('transact'),
             'inv_status' => array('Auth', 'AuthOnly'),
             'method' => array('void', 'purchase')
         );
 
-        if (! in_array($value, $allowed[$key])) {
-            $msg = "unknown $key $value";
-            Mage::log('GetFinancing: transact: ' . $msg);
-            $this->_respond($msg . "\n");
-            return False;
-        }
-
-        return True;
-    }
-
-    public function transactAction()
-    {
-        $request = $this->getRequest();
-
-        if (! $request->isPost()) {
-            Mage::log('GetFinancing: transact: not a POST');
-            $this->_respondUnauthorized();
+        if (! $this->_validateParams($allowed, $params)) {
             return;
-        }
-
-        $params = $request->getPost();
-
-        foreach (array('function', 'inv_status', 'method') as $key) {
-            if (! array_key_exists ($key, $params)) {
-            Mage::log("GetFinancing: transact: missing key $key");
-                return;
-            }
-            if (! $this->_validateParam($key, $params[$key])) {
-                return;
-            }
         }
 
         $postbackMessage = 'GetFinancing: transact: received postback ' .
@@ -159,6 +204,11 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             ' for inv_id ' . $params['inv_id'];
 
         Mage::log($postbackMessage);
+
+        if (!array_key_exists('cust_id_ext', $params)) {
+            Mage::log('GetFinancing: transact: no cust_id_ext specified');
+            return;
+        }
 
         $order = Mage::getModel('sales/order')
             ->loadByIncrementId($params['cust_id_ext']);
@@ -212,6 +262,21 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
         print "OK\n";
 
+    }
+
+    private function _postbackUpdateCustomer()
+    {
+        /* FIXME: eventually change the order's billing/shipping ? */
+        Mage::log('GetFinancing: update_customer: outputting OK');
+
+        print "OK\n";
+    }
+
+    public function transactAction()
+    {
+        // we mistakenly called this action transact in the past, but there
+        // should be one endpoint for all postbacks.
+        return $this->postbackAction();
     }
 
     // FIXME: state and status are not the same; status is under state
