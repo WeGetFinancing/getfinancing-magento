@@ -54,7 +54,11 @@ getting a loan.
 
 <?php
     $checkout_url = Mage::getUrl('checkout/onepage',
-        array("_secure" => $_SERVER["HTTPS"] === "on"));
+        array("_secure" => (
+            isset($_SERVER["HTTPS"]) &&
+            ($_SERVER["HTTPS"] === "on")
+        ))
+    );
 ?>
         gfjQuery('#getfinancing-message').html(
             'Payment aborted.  Redirecting you to the payment choice.<br/>' +
