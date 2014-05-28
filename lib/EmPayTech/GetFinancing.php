@@ -202,6 +202,16 @@ class GetFinancing_Magento extends GetFinancing
 
         $this->log("request: Got email $email");
 
+        $description = "";
+        $cartHelper = Mage::helper('checkout/cart');
+        $items = $cartHelper->getCart()->getItems();
+
+        foreach ($items as $item) {
+            $description .= $item->getName() . " (" . $item->getQty() . "), ";
+        }
+        $description = substr($description, 0, -2);
+        $this->log("request: description " . $description);
+
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
@@ -223,8 +233,7 @@ class GetFinancing_Magento extends GetFinancing
             'cust_id_ext'=> $cust_id_ext,
             'inv_action' => 'AUTH_ONLY',
             'inv_value' => $totals,
-            /* FIXME: description */
-            'udf02' => 'Sample purchase'
+            'udf02' => $description,
         );
 
         $response = parent::request($fields);
