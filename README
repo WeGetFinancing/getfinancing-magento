@@ -24,3 +24,7 @@ Module notes
  - Configure the postback url in the GetFinancing portal as
    getfinancing/standard/postback
    prefixed with your domain
+
+Compatibility
+-------------
+ - This module has been tested with magento versions 1.4 through 1.8
