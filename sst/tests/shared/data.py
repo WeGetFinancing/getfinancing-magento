@@ -10,10 +10,11 @@ user = {
 
     # address data
     'telephone': ('text', '1234567890'),
-    'street_1':  ('text', 'PO BOX 190101'),
+    'street_1':  ('text', 'PO BOX 190648'),
     'region_id': ('option', 'Alaska'),
-    'zip':       ('text', 'PO BOX 190101'),
+    'zip':       ('text', '99519'),
     'country':   ('option', 'United States'),
+    'city':      ('text', 'Anchorage'),
 
 }
 

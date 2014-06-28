@@ -1,10 +1,37 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import os
+
 from sst import actions as a
 
+def get_version():
+    """
+    Return the desired magento version four-tuple.
+    """
+    version = os.environ.get('MAGENTO', '19')
+
+    return {
+        '17': (1, 7, 0, 0),
+        '18': (1, 8, 0, 0),
+        '19': (1, 9, 0, 0),
+    }.get(version, (1, 9, 0, 0))
+
+def go_to():
+    version = os.environ.get('MAGENTO', '19')
+
+    a.go_to('http://magento%s.localhost/' % version)
+
+
+def monkey_patch_sst():
+    if 'tel' not in a._textfields:
+        a._textfields = tuple(list(a._textfields) + ['tel', ])
+
+
 def fill_user_form(user):
+    monkey_patch_sst()
     for key, (vtype, value) in user.items():
+        # print 'fill', key, vtype, value
         try:
             el = a.get_element(id=key)
         except AssertionError:
@@ -50,3 +77,68 @@ def xpath_contains_class(name):
 
 def xpath_contains_text(text):
     return "text()[contains(.,'%s')]" % text
+
+
+class User(object):
+    def __init__(self, data, version=None):
+        if not version:
+            version = get_version()
+        self._data = data
+        self._version = version
+
+    def _account_menu_1_9(self, item):
+        account = a.get_element_by_xpath(
+            "//a[contains(@class, 'skip-account')]")
+        a.click_link(account)
+
+        link = a.get_element_by_xpath("//a[@title='%s']" % item)
+        a.click_link(link)
+
+
+    def register(self):
+        if self._version >= (1, 9, 0, 0):
+            self._account_menu_1_9('Register')
+        else:
+            a.click_link(a.get_element(text='My Account'))
+            button = a.get_element_by_xpath(
+                "//button[@title='Create an Account']")
+            a.click_button(button)
+
+
+        # fill in data for mary and register
+        fill_user_form(self._data)
+
+        if self._version >= (1, 9, 0, 0):
+            title = 'Register'
+        else:
+            title = 'Submit'
+        button = a.get_element_by_xpath("//button[@title='%s']" % title)
+        a.click_button(button)
+
+    def login(self):
+        self._account_menu_1_9('Log In')
+
+        # fill in data on login screen
+        data = {
+            'email': self._data['email_address'],
+            'pass': self._data['password'],
+        }
+        fill_user_form(data)
+
+        button = a.get_element_by_xpath("//button[@title='Login']")
+        a.click_button(button)
+
+    def logout(self):
+        self._account_menu_1_9('Log Out')
+
+
+    def add_billing_address(self):
+        # from the account page
+        manage_link = a.get_element_by_xpath("//a[text()='Manage Addresses']")
+        a.click_link(manage_link)
+
+        fill_user_form(self._data)
+        button = a.get_element_by_xpath("//button[@title='Save Address']")
+        a.click_button(button)
+
+
