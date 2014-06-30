@@ -17,10 +17,10 @@ def get_version():
         '19': (1, 9, 0, 0),
     }.get(version, (1, 9, 0, 0))
 
-def go_to():
+def go_to(url=''):
     version = os.environ.get('MAGENTO', '19')
 
-    a.go_to('http://magento%s.localhost/' % version)
+    a.go_to('http://magento%s.localhost/%s' % (version, url))
 
 
 def monkey_patch_sst():
