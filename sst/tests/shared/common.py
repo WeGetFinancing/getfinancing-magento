@@ -23,6 +23,21 @@ def go_to(url=''):
     a.go_to('http://magento%s.localhost/%s' % (version, url))
 
 
+def click_button_by_title(title, multiple=False):
+    buttons = a.get_elements_by_xpath("//button[@title='%s']" % title)
+
+    if len(buttons) == 0:
+        raise AssertionError, "Could not identify element: 0 elements found"
+
+    if len(buttons) > 1 and not multiple:
+        raise AssertionError, \
+            "Could not identify element: %d elements found" % len(buttons)
+
+    button = buttons[0]
+
+    a.click_button(button)
+
+
 def monkey_patch_sst():
     if 'tel' not in a._textfields:
         a._textfields = tuple(list(a._textfields) + ['tel', ])
