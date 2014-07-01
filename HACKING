@@ -31,3 +31,14 @@ curl -X POST -d 'function=transact&crl_id=1202ddfe-3b4e-11e3-9e24-f23c91695a70&c
 
   The redirect handler will work with a default session if no session is
   active so behaviour can be tested.
+
+Selenium/SST tests
+------------------
+- run tests:
+  cd sst
+  source venv/bin/activate
+  cd tests
+  sst-run -s --debug magento.createuser
+  sst-run -s --debug magento.deleteuser
+
+
