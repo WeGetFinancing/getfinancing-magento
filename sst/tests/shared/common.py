@@ -22,9 +22,8 @@ def go_to(url=''):
 
     a.go_to('http://magento%s.localhost/%s' % (version, url))
 
-
-def click_button_by_title(title, multiple=False):
-    buttons = a.get_elements_by_xpath("//button[@title='%s']" % title)
+def click_element_by_xpath(xpath, multiple=False):
+    buttons = a.get_elements_by_xpath(xpath)
 
     if len(buttons) == 0:
         raise AssertionError, "Could not identify element: 0 elements found"
@@ -36,6 +35,14 @@ def click_button_by_title(title, multiple=False):
     button = buttons[0]
 
     a.click_button(button)
+
+
+def click_button_by_name(name, multiple=False):
+    click_element_by_xpath("//button[@name='%s']" % name, multiple)
+
+
+def click_button_by_title(title, multiple=False):
+    click_element_by_xpath("//button[@title='%s']" % title, multiple)
 
 
 def monkey_patch_sst():
@@ -90,8 +97,33 @@ def customer_edit_by_email(email):
 def xpath_contains_class(name):
     return 'contains(concat(" ", normalize-space(@class), " "), " %s ")' % name
 
+
 def xpath_contains_text(text):
     return "text()[contains(.,'%s')]" % text
+
+
+def get_elements_multiple(args_kwargs):
+    """
+    Call multiple get_elements calls, returning a list of all results.
+
+    Useful when waiting for different possible elements to appear.
+    """
+    ret = []
+
+    for args, kwargs in args_kwargs:
+        print 'THOMAS:', args, kwargs
+        l = []
+        try:
+            l = a.get_elements(*args, **kwargs)
+        except AssertionError, e:
+            print 'THOMAS: assertion', e
+            pass
+        ret.extend(l)
+
+    if not ret:
+        raise AssertionError('Could not identify elements: 0 elements found')
+
+    return ret
 
 
 class User(object):
@@ -142,6 +174,9 @@ class User(object):
 
         button = a.get_element_by_xpath("//button[@title='Login']")
         a.click_button(button)
+
+        e = a.get_element_by_xpath("//p[@class='welcome-msg']")
+        assert e.text == u'WELCOME, MARY BERNARD!', "Login failed: %r" % e.text
 
     def logout(self):
         self._account_menu_1_9('Log Out')
