@@ -6,7 +6,7 @@ from sst.actions import *
 import common
 import data
 
-go_to('http://magento19.localhost/')
+common.go_to()
 assert_title_contains('Home page')
 
 user = common.User(data.user)

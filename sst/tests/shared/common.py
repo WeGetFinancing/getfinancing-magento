@@ -50,20 +50,32 @@ def monkey_patch_sst():
         a._textfields = tuple(list(a._textfields) + ['tel', ])
 
 
-def fill_user_form(user):
+def fill_user_form(user, version=None):
     monkey_patch_sst()
-    for key, (vtype, value) in user.items():
-        # print 'fill', key, vtype, value
+
+    keys = user.keys()
+    # for 1.8 and possibly lower, country needs to be filled before region_id
+    # is a dropdown
+    keys.sort()
+
+    for key in keys:
+        (vtype, value) = user[key]
+        print 'fill', key, vtype, value
         try:
             el = a.get_element(id=key)
         except AssertionError:
             continue
 
+        # before 1.9 region was a text field
+        #if version < (1, 9, 0, 0) and key == 'region_id':
+        #    el = a.get_element(id='region')
+        #    a.write_textfield(el, value)
         if vtype == 'text':
             a.write_textfield(el, value)
         elif vtype == 'password':
             a.write_textfield(el, value, check=False)
         elif vtype == 'option':
+            a.wait_for(a.assert_displayed, el)
             a.set_dropdown_value(el, value)
 
 def admin_nav(first, second):
@@ -111,12 +123,10 @@ def get_elements_multiple(args_kwargs):
     ret = []
 
     for args, kwargs in args_kwargs:
-        print 'THOMAS:', args, kwargs
         l = []
         try:
             l = a.get_elements(*args, **kwargs)
         except AssertionError, e:
-            print 'THOMAS: assertion', e
             pass
         ret.extend(l)
 
@@ -153,7 +163,7 @@ class User(object):
 
 
         # fill in data for mary and register
-        fill_user_form(self._data)
+        fill_user_form(self._data, version=self._version)
 
         if self._version >= (1, 9, 0, 0):
             title = 'Register'
@@ -163,23 +173,30 @@ class User(object):
         a.click_button(button)
 
     def login(self):
-        self._account_menu_1_9('Log In')
+        if self._version >= (1, 9, 0, 0):
+            self._account_menu_1_9('Log In')
+        else:
+            a.click_link(a.get_element(text='Log In'))
 
         # fill in data on login screen
         data = {
             'email': self._data['email_address'],
             'pass': self._data['password'],
         }
-        fill_user_form(data)
+        fill_user_form(data, version=self._version)
 
         button = a.get_element_by_xpath("//button[@title='Login']")
         a.click_button(button)
 
         e = a.get_element_by_xpath("//p[@class='welcome-msg']")
-        assert e.text == u'WELCOME, MARY BERNARD!', "Login failed: %r" % e.text
+        assert e.text.upper() == u'WELCOME, MARY BERNARD!', \
+            "Login failed: %r" % e.text
 
     def logout(self):
-        self._account_menu_1_9('Log Out')
+        if self._version >= (1, 9, 0, 0):
+            self._account_menu_1_9('Log Out')
+        else:
+            a.click_link(a.get_element(text='Log Out'))
 
 
     def add_billing_address(self):
@@ -187,7 +204,7 @@ class User(object):
         manage_link = a.get_element_by_xpath("//a[text()='Manage Addresses']")
         a.click_link(manage_link)
 
-        fill_user_form(self._data)
+        fill_user_form(self._data, version=self._version)
         button = a.get_element_by_xpath("//button[@title='Save Address']")
         a.click_button(button)
 
