@@ -1,0 +1,2 @@
+- when misconfiguring username/password, redirect just gives an empty page
+  it should probably give more info
