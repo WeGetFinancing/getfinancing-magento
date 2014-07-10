@@ -25,27 +25,40 @@ def go_to(url=''):
 
     a.go_to('http://magento%s.localhost/%s' % (version, url))
 
-def click_element_by_xpath(xpath, multiple=False):
-    buttons = a.get_elements_by_xpath(xpath)
+def click_element_by_xpath(xpath, multiple=False, wait=True):
+    """
+    Click the element given by the xpath.
 
-    if len(buttons) == 0:
+    @param multiple: if True, allow multiple elements and click the first one.
+    @param wait:     if True, wait for a page with body element available.
+    """
+    elements = a.get_elements_by_xpath(xpath)
+
+    if len(elements) == 0:
         raise AssertionError, "Could not identify element: 0 elements found"
 
-    if len(buttons) > 1 and not multiple:
+    if len(elements) > 1 and not multiple:
         raise AssertionError, \
-            "Could not identify element: %d elements found" % len(buttons)
+            "Could not identify element: %d elements found" % len(elements)
 
-    button = buttons[0]
+    element = elements[0]
 
-    a.click_button(button)
-
-
-def click_button_by_name(name, multiple=False):
-    click_element_by_xpath("//button[@name='%s']" % name, multiple)
+    a.click_element(element, wait=wait)
 
 
-def click_button_by_title(title, multiple=False):
-    click_element_by_xpath("//button[@title='%s']" % title, multiple)
+def click_button_by_name(name, multiple=False, wait=True):
+    click_element_by_xpath("//button[@name='%s']" % name,
+        multiple=multiple, wait=wait)
+
+
+def click_link_by_title(title, multiple=False, wait=True):
+    click_element_by_xpath("//a[@title='%s']" % title,
+        multiple=multiple, wait=wait)
+
+
+def click_button_by_title(title, multiple=False, wait=True):
+    click_element_by_xpath("//button[@title='%s']" % title,
+        multiple=multiple, wait=wait)
 
 
 def monkey_patch_sst():
@@ -240,3 +253,44 @@ class Admin(object):
             "//a" % (xpath_contains_text(email))
         )
         a.click_link(edit_link)
+
+    def add_product(self, name, price, sku):
+        self.navigate('Catalog', 'Manage Products')
+        click_button_by_title('Add Product', multiple=True)
+        click_button_by_title('Continue', multiple=True)
+
+
+        a.write_textfield('name', name)
+        a.write_textfield('description', name)
+        a.write_textfield('short_description', name)
+        a.write_textfield('sku', sku)
+        a.write_textfield('weight', '1')
+        a.set_dropdown_value('status', 'Enabled')
+        click_button_by_title('Save and Continue Edit', multiple=True)
+
+        a.set_dropdown_value('tax_class_id', 'None')
+        a.write_textfield('price', price)
+        click_button_by_title('Save and Continue Edit', multiple=True)
+
+        a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
+            xpath_contains_text('product has been saved')
+        )
+        click_link_by_title('Inventory')
+        a.write_textfield('inventory_qty', '999999999')
+        a.set_dropdown_value('inventory_stock_availability', 'In Stock')
+        click_button_by_title('Save', multiple=True)
+        a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
+            xpath_contains_text('product has been saved')
+        )
+
+    def delete_products(self):
+        self.navigate('Catalog', 'Manage Products')
+
+        select_all_link = a.get_element_by_xpath(
+            "//a[%s]" % (
+                xpath_contains_text('Select All'))
+        )
+        a.click_link(select_all_link)
+        a.set_dropdown_value('productGrid_massaction-select', 'Delete')
+        click_button_by_title('Submit', wait=False)
+        a.accept_alert('Are you sure?')
