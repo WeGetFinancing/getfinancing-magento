@@ -81,31 +81,6 @@ def fill_user_form(user, version=None):
             a.wait_for(a.assert_displayed, el)
             a.set_dropdown_value(el, value)
 
-def admin_nav(first, second):
-    # no idea how to hover, but there's a false click handler so that works
-    hover_link = a.get_element_by_xpath(
-        "//li[%s]/*/*[%s]/.." % (
-            xpath_contains_class('level0'),
-            xpath_contains_text(first))
-    )
-    a.click_link(hover_link)
-
-    final_link = a.get_element_by_xpath(
-        "//li[%s]/*/*[%s]/.." % (
-            xpath_contains_class('level1'),
-            xpath_contains_text(second))
-    )
-    a.click_link(final_link)
-
-def customer_edit_by_email(email):
-    edit_link = a.get_element_by_xpath(
-        "//table[@id='customerGrid_table']"
-        "//td[%s]"
-        "//.."
-        "//a" % (xpath_contains_text(email))
-    )
-    a.click_link(edit_link)
-
 
 # See
 # http://stackoverflow.com/questions/8808921/selecting-a-css-class-with-xpath
@@ -129,7 +104,7 @@ def get_elements_multiple(args_kwargs):
         l = []
         try:
             l = a.get_elements(*args, **kwargs)
-        except AssertionError, e:
+        except AssertionError:
             pass
         ret.extend(l)
 
@@ -212,3 +187,56 @@ class User(object):
         a.click_button(button)
 
 
+class Admin(object):
+    def __init__(self, data, version=None):
+        if not version:
+            version = get_version()
+        self._data = data
+        self._version = version
+
+
+    def login(self):
+        go_to('admin/')
+        a.assert_title_contains('Admin')
+
+        fill_user_form(self._data)
+        button = a.get_element_by_xpath("//input[@title='Login']")
+        a.click_button(button)
+
+        # do away with messages if any
+        try:
+            close = a.get_element_by_xpath(
+                "//div[@id='message-popup-window']"
+                "//a[@title='close']")
+        except AssertionError:
+            pass
+        if close:
+            a.click_link(close)
+
+    def logout(self):
+        a.click_link(a.get_element(text='Log Out'))
+
+    def navigate(self, first, second):
+        # no idea how to hover, but there's a false click handler so that works
+        hover_link = a.get_element_by_xpath(
+            "//li[%s]/*/*[%s]/.." % (
+                xpath_contains_class('level0'),
+                xpath_contains_text(first))
+        )
+        a.click_link(hover_link)
+
+        final_link = a.get_element_by_xpath(
+            "//li[%s]/*/*[%s]/.." % (
+                xpath_contains_class('level1'),
+                xpath_contains_text(second))
+        )
+        a.click_link(final_link)
+
+    def customer_edit_by_email(self, email):
+        edit_link = a.get_element_by_xpath(
+            "//table[@id='customerGrid_table']"
+            "//td[%s]"
+            "//.."
+            "//a" % (xpath_contains_text(email))
+        )
+        a.click_link(edit_link)

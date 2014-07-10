@@ -1,2 +1,2 @@
 check:
-	sst-run magento19 -s --debug
+	sst-run getfinancing -s --debug
