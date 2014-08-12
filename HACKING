@@ -40,5 +40,9 @@ Selenium/SST tests
   cd tests
   sst-run -s --debug magento.createuser
   sst-run -s --debug magento.deleteuser
+- environment variables for tests:
+  - MAGENTO_VERSION: the version used; defaults to 1.9.0.0
+  - MAGENTO_DOMAIN_SUFFIX: the part after the hostname, including leading dot;
+                           defaults to .localhost
 
 

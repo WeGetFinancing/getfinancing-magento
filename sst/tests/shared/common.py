@@ -9,7 +9,7 @@ def get_version():
     """
     Return the desired magento version four-tuple.
     """
-    version = os.environ.get('MAGENTO', '19')
+    version = os.environ.get('MAGENTO_VERSION', '19')
 
     return {
         '14': (1, 4, 0, 0),
@@ -21,9 +21,13 @@ def get_version():
     }.get(version, (1, 9, 0, 0))
 
 def go_to(url=''):
-    version = os.environ.get('MAGENTO', '19')
+    protocol = os.environ.get('MAGENTO_PROTOCOL', 'http')
+    domain = os.environ.get('MAGENTO_DOMAIN_SUFFIX', '.localhost')
 
-    a.go_to('http://magento%s.localhost/%s' % (version, url))
+    vtuple = get_version()
+    hostname = 'magento-' + '-'.join(str(v) for v in vtuple)
+
+    a.go_to('%s://%s%s/%s' % (protocol, hostname, domain, url))
 
 def click_element_by_xpath(xpath, multiple=False, wait=True):
     """
