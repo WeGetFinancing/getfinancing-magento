@@ -25,7 +25,8 @@ def go_to(url=''):
     domain = os.environ.get('MAGENTO_DOMAIN_SUFFIX', '.localhost')
 
     vtuple = get_version()
-    hostname = 'magento-' + '-'.join(str(v) for v in vtuple)
+    hostname = os.environ.get('MAGENTO_HOSTNAME',
+        'magento-' + '-'.join(str(v) for v in vtuple))
 
     a.go_to('%s://%s%s/%s' % (protocol, hostname, domain, url))
 
