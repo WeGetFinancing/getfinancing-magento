@@ -1,6 +1,8 @@
 # -*- Mode: Python -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import os
+
 user = {
     # user registration data
     'firstname':     ('text', 'Mary'),
@@ -22,5 +24,6 @@ user['confirmation'] = user['password']
 
 admin = {
     'username':      ('text', 'admin'),
-    'login':         ('password', 'adminpassword'),
+    'login':         ('password', os.environ.get(
+                        'MAGENTO_ADMIN_PASSWORD', 'adminpassword')),
 }
