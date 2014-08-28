@@ -41,8 +41,10 @@ Selenium/SST tests
   sst-run -s --debug magento.createuser
   sst-run -s --debug magento.deleteuser
 - environment variables for tests:
-  - MAGENTO_VERSION: the version used; defaults to 1.9.0.0
+  - MAGENTO_VERSION: the version used; defaults to 19 for 1.9.0.0
   - MAGENTO_DOMAIN_SUFFIX: the part after the hostname, including leading dot;
                            defaults to .localhost
-
-
+  - MAGENTO_PROTOCOL: http (default) or https
+  - MAGENTO_HOSTNAME: if you want to override it compared to the one guessed
+                      from VERSION
+  - MAGENTO_ADMIN_PASSWORD
