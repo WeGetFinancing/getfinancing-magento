@@ -280,8 +280,12 @@ class Admin(object):
         a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
             xpath_contains_text('product has been saved')
         )
+        # Clicking reset clears the message; allowing us to assert again later
+        # to make sure the change is made
+        click_button_by_title('Reset', multiple=True)
+
         click_link_by_title('Inventory')
-        a.write_textfield('inventory_qty', '999999999')
+        a.write_textfield('inventory_qty', '9999999')
         a.set_dropdown_value('inventory_stock_availability', 'In Stock')
         click_button_by_title('Save', multiple=True)
         a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
