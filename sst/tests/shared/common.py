@@ -299,3 +299,15 @@ class Admin(object):
         a.set_dropdown_value('productGrid_massaction-select', 'Delete')
         click_button_by_title('Submit', wait=False)
         a.accept_alert('Are you sure?')
+
+    def rebuild_indexes(self):
+        self.navigate('System', 'Index Management')
+
+        select_all_link = a.get_element_by_xpath(
+            "//a[%s]" % (
+                xpath_contains_text('Select All'))
+        )
+        a.click_link(select_all_link)
+        a.set_dropdown_value('indexer_processes_grid_massaction-select',
+            'Reindex Data')
+        click_button_by_title('Submit', wait=False)
