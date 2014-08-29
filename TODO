@@ -1,2 +1,4 @@
 - when misconfiguring username/password, redirect just gives an empty page
   it should probably give more info
+- add an icon to our payment method, plus a link, just like paypal; see
+  app/design/frontend/base/default/template/paypal/payment/mark.phtml:<a href="<?php echo $this->getPaymentAcceptanceMarkHref()?>" onclick="javascript:window.open('<?php echo $this->getPaymentAcceptanceMarkHref()?>','olcwhatispaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, ,left=0, top=0, width=400, height=350'); return false;"><?php echo Mage::helper('paypal')->__('What is PayPal?') ?></a>
