@@ -147,12 +147,60 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $this->_respond($msg . "\n");
     }
 
+    private function _validateAuth()
+    {
+        $paymentMethod = $this->getPaymentMethod();
+        $postback_username = $paymentMethod->getConfigData('postback_username');
+        $postback_password = $paymentMethod->getConfigData('postback_password');
+        if (!$postback_username ||
+            !$postback_password) {
+            Mage::log('GetFinancing: postback: no authorization configured');
+            return True;
+        }
+
+        # see http://evertpot.com/223/
+
+        $username = null;
+        $password = null;
+
+        // mod_php
+        if (isset($_SERVER['PHP_AUTH_USER'])) {
+            $username = $_SERVER['PHP_AUTH_USER'];
+            $password = $_SERVER['PHP_AUTH_PW'];
+
+        // most other servers
+        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            if (strpos(strtolower($_SERVER['HTTP_AUTHORIZATION']),
+                'basic') === 0) {
+                list($username, $password) = explode(':',
+                    base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+            }
+        }
+
+        if ($username != $postback_username) {
+            Mage::log("GetFinancing: postback: invalid username $username");
+            return False;
+        }
+        if ($password != $postback_password) {
+            Mage::log("GetFinancing: postback: invalid password");
+            return False;
+        }
+        Mage::log("GetFinancing: postback: authorized");
+
+        return True;
+    }
+
+
     public function postbackAction()
     {
         $request = $this->getRequest();
 
         if (! $request->isPost()) {
             Mage::log('GetFinancing: postback: not a POST');
+            $this->_respondUnauthorized();
+            return;
+        }
+        if (! $this->_validateAuth()) {
             $this->_respondUnauthorized();
             return;
         }
