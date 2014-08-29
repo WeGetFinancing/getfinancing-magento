@@ -319,3 +319,24 @@ class Admin(object):
         a.set_dropdown_value('indexer_processes_grid_massaction-select',
             'Reindex Data')
         click_button_by_title('Submit', wait=False)
+
+    def navigate_configuration(self, option):
+        """
+        From System > Configuration, navigate to an option in the left menu.
+        """
+        click_element_by_xpath("//a/span[%s]" % (
+            xpath_contains_text(option)),
+            multiple=False, wait=True)
+
+    def allow_symlinks(self):
+        # configure magento to allow symlinks in templates
+        # useful for allowing modman to work
+        self.navigate('System', 'Configuration')
+        self.navigate_configuration('Developer')
+        # TemplateSettings could be open already
+        try:
+            a.assert_displayed('dev_template_allow_symlink')
+        except AssertionError:
+            click_link_by_text('Template Settings')
+        a.set_dropdown_value('dev_template_allow_symlink', 'Yes')
+        click_button_by_title('Save Config', multiple=True)
