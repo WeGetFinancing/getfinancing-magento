@@ -50,6 +50,10 @@ def click_element_by_xpath(xpath, multiple=False, wait=True):
 
     a.click_element(element, wait=wait)
 
+def click_link_by_text(text, multiple=False, wait=True):
+    click_element_by_xpath("//a[%s]" % (
+        xpath_contains_text(text)),
+        multiple=multiple, wait=wait)
 
 def click_button_by_name(name, multiple=False, wait=True):
     click_element_by_xpath("//button[@name='%s']" % name,
