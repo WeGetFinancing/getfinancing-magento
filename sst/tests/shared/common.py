@@ -340,3 +340,14 @@ class Admin(object):
             click_link_by_text('Template Settings')
         a.set_dropdown_value('dev_template_allow_symlink', 'Yes')
         click_button_by_title('Save Config', multiple=True)
+
+    def enable_log(self):
+        self.navigate('System', 'Configuration')
+        self.navigate_configuration('Developer')
+        # TemplateSettings could be open already
+        try:
+            a.assert_displayed('dev_log_active')
+        except AssertionError:
+            click_link_by_text('Log Settings')
+        a.set_dropdown_value('dev_log_active', 'Yes')
+        click_button_by_title('Save Config', multiple=True)

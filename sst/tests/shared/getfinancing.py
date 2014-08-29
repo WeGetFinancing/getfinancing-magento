@@ -35,5 +35,6 @@ class Admin(common.Admin):
         common.click_button_by_title('Save Config', multiple=True)
 
         self.allow_symlinks()
+        self.enable_log()
 
 
