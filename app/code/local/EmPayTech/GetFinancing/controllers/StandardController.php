@@ -182,7 +182,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             return False;
         }
         if ($password != $postback_password) {
-            Mage::log("GetFinancing: postback: invalid password");
+            Mage::log("GetFinancing: postback: invalid password $password");
             return False;
         }
         Mage::log("GetFinancing: postback: authorized");
