@@ -57,7 +57,7 @@ el = a.wait_for(common.get_elements_multiple, [
 
 if el[0].get_attribute('id') == 'id_salary_current':
     a.wait_for(a.assert_displayed, 'id_salary_current')
-    a.write_textfield('id_salary_current', '120000')
+    a.write_textfield('id_salary_current', '120,000')
     a.click_button('submit-id-btn_find')
 
 a.wait_for(a.assert_displayed, 'leave-comment')
