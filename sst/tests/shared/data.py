@@ -7,7 +7,7 @@ user = {
     # user registration data
     'firstname':     ('text', 'Mary'),
     'lastname':      ('text', 'Bernard'),
-    'email_address': ('text', 'mary@email.com'),
+    'email_address': ('text', 'mary@example.com'),
     'password':      ('password', 'marybernard'),
 
     # address data
