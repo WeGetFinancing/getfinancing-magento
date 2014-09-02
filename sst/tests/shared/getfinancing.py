@@ -10,7 +10,7 @@ from sst import actions as a
 class Admin(common.Admin):
 
     def configure_getfinancing(self, merch_id=None, username=None,
-        password=None):
+        password=None, postback_username=None, postback_password=None):
 
         if not merch_id:
             merch_id = os.getenv('GF_MERCH_ID')
@@ -18,6 +18,10 @@ class Admin(common.Admin):
             username = os.getenv('GF_USERNAME')
         if not password:
             password = os.getenv('GF_PASSWORD')
+        if not postback_username:
+            postback_username = os.getenv('GF_POSTBACK_USERNAME')
+        if not postback_password:
+            postback_password = os.getenv('GF_POSTBACK_PASSWORD')
 
         self.navigate('System', 'Configuration')
         self.navigate_configuration('Payment Methods')
@@ -32,6 +36,10 @@ class Admin(common.Admin):
         a.write_textfield('payment_getfinancing_merch_id', merch_id)
         a.write_textfield('payment_getfinancing_username', username)
         a.write_textfield('payment_getfinancing_password', password)
+        a.write_textfield('payment_getfinancing_postback_username',
+            postback_username)
+        a.write_textfield('payment_getfinancing_postback_password',
+            postback_password)
         common.click_button_by_title('Save Config', multiple=True)
 
         self.allow_symlinks()
