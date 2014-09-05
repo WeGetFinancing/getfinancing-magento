@@ -226,6 +226,7 @@ class Admin(object):
         a.click_button(button)
 
         # do away with messages if any
+        close = None
         try:
             close = a.get_element_by_xpath(
                 "//div[@id='message-popup-window']"
