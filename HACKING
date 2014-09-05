@@ -48,3 +48,10 @@ Selenium/SST tests
   - MAGENTO_HOSTNAME: if you want to override it compared to the one guessed
                       from VERSION
   - MAGENTO_ADMIN_PASSWORD
+
+New release
+-----------
+
+- update version number
+  vim Makefile
+  vim app/code/local/EmPayTech/GetFinancing/etc/config.xml

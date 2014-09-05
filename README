@@ -1,3 +1,13 @@
+Installing the module
+---------------------
+
+- unzip the .zip file
+- copy over the app and lib trees
+  - over ftp:
+    - put -R app lib
+    - ls app/code/local/EmPayTech/GetFinancing/Model/PaymentMethod.php
+    - ls lib/EmPayTech/GetFinancing.php
+
 Activating the module
 ---------------------
  - Go to the admin backoffice
