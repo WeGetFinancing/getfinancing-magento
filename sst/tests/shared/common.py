@@ -141,7 +141,25 @@ def get_elements_multiple(args_kwargs):
     return ret
 
 
-class User(object):
+class BaseUser(object):
+
+    def login(self):
+        raise NotImplementedError
+
+    def logout(self):
+        raise NotImplementedError
+
+    def click_magento_button(self, text, wait=True):
+        """
+        Click one of those cute orange Magento action buttons, across versions.
+        """
+        if self._version >= (1, 7, 0, 0):
+            click_button_by_title(text, multiple=True, wait=wait)
+        else:
+            click_button_by_text(text, multiple=True, wait=wait)
+
+
+class User(BaseUser):
     def __init__(self, data, version=None):
         if not version:
             version = get_version()
@@ -214,7 +232,7 @@ class User(object):
         a.click_button(button)
 
 
-class Admin(object):
+class Admin(BaseUser):
     def __init__(self, data, version=None):
         if not version:
             version = get_version()
@@ -378,11 +396,4 @@ class Admin(object):
     def click_save_config(self):
         self.click_magento_button('Save Config')
 
-    def click_magento_button(self, text, wait=True):
-        """
-        Click one of those cute orange Magento action buttons, across versions.
-        """
-        if self._version >= (1, 7, 0, 0):
-            click_button_by_title(text, multiple=True, wait=wait)
-        else:
-            click_button_by_text(text, multiple=True, wait=wait)
+

@@ -28,6 +28,17 @@ a.click_button(a.get_element_by_xpath(
     "//div[@id='checkout-step-billing']"
     "//button[@title='Continue']"))
 
+# in 1.4 it doesn't automatically proceed to shipping method
+# because Use Billing Address is not active
+if common.get_version() < (1, 5, 0, 0):
+    check = a.get_element_by_xpath("//input[@id='shipping:same_as_billing']")
+    a.wait_for(a.assert_displayed, check)
+    check.click()
+    # we need the right continue button, so roll by hand
+    button = a.get_element_by_xpath(
+        "//form[@id='co-shipping-form']//button[@title='Continue']")
+    button.click()
+
 a.wait_for(a.assert_displayed, 'checkout-step-shipping_method')
 
 a.click_button(a.get_element_by_xpath(
@@ -71,6 +82,7 @@ a.wait_for(a.get_element_by_xpath, "//input[@value='Open']")
 
 # complete lendingclub part
 a.wait_for(a.switch_to_window, 1)
+a.wait_for(a.assert_displayed, 'master_nextButton')
 a.click_button('master_nextButton')
 
 a.click_button('master_getYourRateButton')
