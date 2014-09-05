@@ -24,6 +24,33 @@ Activating the module
    - Fill in username
    - Fill in password
 
+Opening the firewall
+--------------------
+Your server needs to be able to communicate with the GetFinancing platform.
+For this to work, the firewall needs to allow outgoing connections on ports
+10000 and 10001.
+
+If you do not know how to do this yourself, please ask your hosting provider
+to do this for you.
+
+Testing
+-------
+
+In the complete integration guide that you can download from our portal,
+you can see various test personae that you can use for testing.
+
+Switching to production
+-----------------------
+
+ - Go to the admin backoffice
+ - At the top, go to System > Configuration
+ - On the left, go to Sales > Payment Methods
+ - Under 'GetFinancing', fill in the production URL, and switch the Platform
+   dropdown from staging to production.
+
+Note that after this change, you should no longer use the test personae you
+used for testing, and all requests go to our production platform.
+
 Module notes
 ------------
  - when checking out with GetFinancing, the quote only gets converted to
@@ -37,4 +64,4 @@ Module notes
 
 Compatibility
 -------------
- - This module has been tested with magento versions 1.4 through 1.8
+ - This module has been tested with magento versions 1.4 through 1.9
