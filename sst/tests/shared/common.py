@@ -55,6 +55,11 @@ def click_link_by_text(text, multiple=False, wait=True):
         xpath_contains_text(text)),
         multiple=multiple, wait=wait)
 
+def click_button_by_text(text, multiple=False, wait=True):
+    click_element_by_xpath("//button[//*[%s]]" % (
+        xpath_contains_text(text)),
+        multiple=multiple, wait=wait)
+
 def click_button_by_name(name, multiple=False, wait=True):
     click_element_by_xpath("//button[@name='%s']" % name,
         multiple=multiple, wait=wait)
@@ -330,6 +335,11 @@ class Admin(object):
             multiple=False, wait=True)
 
     def allow_symlinks(self):
+        # the option was introduced in 1.5
+        # 1.4.0 should allow it, 1.4.2 no longer allowed symlinks
+        if self._version < (1, 5, 0, 0):
+            return
+
         # configure magento to allow symlinks in templates
         # useful for allowing modman to work
         self.navigate('System', 'Configuration')
@@ -340,7 +350,7 @@ class Admin(object):
         except AssertionError:
             click_link_by_text('Template Settings')
         a.set_dropdown_value('dev_template_allow_symlink', 'Yes')
-        click_button_by_title('Save Config', multiple=True)
+        self.click_save_config()
 
     def enable_log(self):
         self.navigate('System', 'Configuration')
@@ -351,4 +361,10 @@ class Admin(object):
         except AssertionError:
             click_link_by_text('Log Settings')
         a.set_dropdown_value('dev_log_active', 'Yes')
-        click_button_by_title('Save Config', multiple=True)
+        self.click_save_config()
+
+    def click_save_config(self):
+        if self._version >= (1, 7, 0, 0):
+            click_button_by_title('Save Config', multiple=True)
+        else:
+            click_button_by_text('Save Config', multiple=True)

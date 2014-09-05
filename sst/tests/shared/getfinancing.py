@@ -40,7 +40,7 @@ class Admin(common.Admin):
             postback_username)
         a.write_textfield('payment_getfinancing_postback_password',
             postback_password)
-        common.click_button_by_title('Save Config', multiple=True)
+        self.click_save_config()
 
         self.allow_symlinks()
         self.enable_log()
