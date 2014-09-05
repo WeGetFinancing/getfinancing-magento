@@ -292,6 +292,18 @@ class Admin(object):
         a.write_textfield('price', price)
         self.click_save_and_continue()
 
+        self.wait_for_product_saved()
+        # Clicking reset clears the message; allowing us to assert again later
+        # to make sure the change is made
+        self.click_magento_button('Reset')
+
+        click_link_by_title('Inventory')
+        a.write_textfield('inventory_qty', '9999999')
+        a.set_dropdown_value('inventory_stock_availability', 'In Stock')
+        self.click_magento_button('Save')
+        self.wait_for_product_saved()
+
+    def wait_for_product_saved(self):
         a.wait_for(a.get_element_by_xpath,
             "//div[@id='messages']//span[%s]"
             "|"
@@ -300,17 +312,6 @@ class Admin(object):
             xpath_contains_text('product has been saved'),
             # 1.4
             xpath_contains_text('Product was successfully saved.')),
-        )
-        # Clicking reset clears the message; allowing us to assert again later
-        # to make sure the change is made
-        click_button_by_title('Reset', multiple=True)
-
-        click_link_by_title('Inventory')
-        a.write_textfield('inventory_qty', '9999999')
-        a.set_dropdown_value('inventory_stock_availability', 'In Stock')
-        click_button_by_title('Save', multiple=True)
-        a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
-            xpath_contains_text('product has been saved')
         )
 
     def delete_products(self):
@@ -334,7 +335,7 @@ class Admin(object):
         a.click_link(select_all_link)
         a.set_dropdown_value('indexer_processes_grid_massaction-select',
             'Reindex Data')
-        click_button_by_title('Submit', wait=False)
+        self.click_magento_button('Submit')
 
     def navigate_configuration(self, option):
         """
@@ -378,6 +379,9 @@ class Admin(object):
         self.click_magento_button('Save Config')
 
     def click_magento_button(self, text, wait=True):
+        """
+        Click one of those cute orange Magento action buttons, across versions.
+        """
         if self._version >= (1, 7, 0, 0):
             click_button_by_title(text, multiple=True, wait=wait)
         else:
