@@ -56,8 +56,8 @@ def click_link_by_text(text, multiple=False, wait=True):
         multiple=multiple, wait=wait)
 
 def click_button_by_text(text, multiple=False, wait=True):
-    click_element_by_xpath("//button[//*[%s]]" % (
-        xpath_contains_text(text)),
+    # see https://www.ruby-forum.com/topic/162339
+    click_element_by_xpath("//button[contains(., '%s')]" % text,
         multiple=multiple, wait=wait)
 
 def click_button_by_name(name, multiple=False, wait=True):
@@ -269,11 +269,16 @@ class Admin(object):
         )
         a.click_link(edit_link)
 
+    def click_save_and_continue(self):
+        if self._version < (1, 5, 0, 0):
+            self.click_magento_button('Save And Continue Edit')
+        else:
+            self.click_magento_button('Save and Continue Edit')
+
     def add_product(self, name, price, sku):
         self.navigate('Catalog', 'Manage Products')
-        click_button_by_title('Add Product', multiple=True)
-        click_button_by_title('Continue', multiple=True)
-
+        self.click_magento_button('Add Product')
+        self.click_magento_button('Continue')
 
         a.write_textfield('name', name)
         a.write_textfield('description', name)
@@ -281,14 +286,20 @@ class Admin(object):
         a.write_textfield('sku', sku)
         a.write_textfield('weight', '1')
         a.set_dropdown_value('status', 'Enabled')
-        click_button_by_title('Save and Continue Edit', multiple=True)
 
+        self.click_save_and_continue()
         a.set_dropdown_value('tax_class_id', 'None')
         a.write_textfield('price', price)
-        click_button_by_title('Save and Continue Edit', multiple=True)
+        self.click_save_and_continue()
 
-        a.wait_for(a.get_element_by_xpath, "//div[@id='messages']//span[%s]" %
-            xpath_contains_text('product has been saved')
+        a.wait_for(a.get_element_by_xpath,
+            "//div[@id='messages']//span[%s]"
+            "|"
+            "//div[@id='messages']//li[%s]" % (
+            # 1.5 and higher
+            xpath_contains_text('product has been saved'),
+            # 1.4
+            xpath_contains_text('Product was successfully saved.')),
         )
         # Clicking reset clears the message; allowing us to assert again later
         # to make sure the change is made
@@ -304,14 +315,13 @@ class Admin(object):
 
     def delete_products(self):
         self.navigate('Catalog', 'Manage Products')
+        if a.get_elements_by_xpath("//td[text()='No records found.']"):
+            return
 
-        select_all_link = a.get_element_by_xpath(
-            "//a[%s]" % (
-                xpath_contains_text('Select All'))
-        )
-        a.click_link(select_all_link)
+        click_link_by_text('Select All')
+
         a.set_dropdown_value('productGrid_massaction-select', 'Delete')
-        click_button_by_title('Submit', wait=False)
+        self.click_magento_button('Submit', wait=False)
         a.accept_alert('Are you sure?')
 
     def rebuild_indexes(self):
@@ -363,8 +373,12 @@ class Admin(object):
         a.set_dropdown_value('dev_log_active', 'Yes')
         self.click_save_config()
 
+    # FIXME: deprecate
     def click_save_config(self):
+        self.click_magento_button('Save Config')
+
+    def click_magento_button(self, text, wait=True):
         if self._version >= (1, 7, 0, 0):
-            click_button_by_title('Save Config', multiple=True)
+            click_button_by_title(text, multiple=True, wait=wait)
         else:
-            click_button_by_text('Save Config', multiple=True)
+            click_button_by_text(text, multiple=True, wait=wait)
