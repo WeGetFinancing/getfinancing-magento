@@ -27,11 +27,8 @@ Activating the module
 Opening the firewall
 --------------------
 Your server needs to be able to communicate with the GetFinancing platform.
-For this to work, the firewall needs to allow outgoing connections on ports
-10000 and 10001.
-
-If you do not know how to do this yourself, please ask your hosting provider
-to do this for you.
+We used to require merchants open ports 10000 and 10001 but since 2015 we allow to communicate 
+with the standard 443 implied by https. If it works with the default url, you don't have to worry about this. 
 
 Testing
 -------
