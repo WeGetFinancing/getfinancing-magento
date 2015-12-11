@@ -112,6 +112,7 @@
         <title>GetFinancing</title>
         <!-- our default values -->
         <gateway_url_staging>https://api-test.getfinancing.com/gateway/transact.cfm</gateway_url_staging>
+        <gateway_url_production>https://api.getfinancing.com/gateway/transact.cfm</gateway_url_production>
         <platform>staging</platform>
         <allowspecific>0</allowspecific>
         <min_order_total>1</min_order_total>
