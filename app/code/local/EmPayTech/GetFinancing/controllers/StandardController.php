@@ -264,7 +264,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             Mage::log("GetFinancing: transact: $message");
             // do not throw an error, this happens if the order was not created
             // need to send OK to count as correct
-            print "OK";
+            print "OK\n";
             return;
         }
 
