@@ -263,7 +263,8 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
                 . $params['cust_id_ext'] . " could not be found.";
             Mage::log("GetFinancing: transact: $message");
             // do not throw an error, this happens if the order was not created
-            print "Order was not created. Everything is good, no need to resend the postback. \n";
+            // need to send OK to count as correct
+            print "OK";
             return;
         }
 
