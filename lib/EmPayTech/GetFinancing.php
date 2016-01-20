@@ -50,6 +50,7 @@ class GetFinancing
 
         $query = http_build_query($fields);
         $this->log("request: $query");
+        $this->log("url to post: $this->url");
 
         $ch = curl_init($this->url);
 
