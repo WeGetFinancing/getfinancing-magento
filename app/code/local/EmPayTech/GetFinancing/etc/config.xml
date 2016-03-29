@@ -96,6 +96,15 @@
       </updates>
     </layout>
   </frontend>
+  <adminhtml>
+      <layout>
+          <updates>
+              <getfinancing>
+                  <file>empaytech.xml</file>
+              </getfinancing>
+          </updates>
+      </layout>
+  </adminhtml>
   <!-- declare default configuration values for this module -->
   <default>
     <!-- 'payment' configuration section (tab) -->
@@ -111,12 +120,10 @@
         <!-- default title for payment checkout page and order view page -->
         <title>GetFinancing</title>
         <!-- our default values -->
-        <gateway_url_staging>https://api-test.getfinancing.com/gateway/transact.cfm</gateway_url_staging>
-        <gateway_url_production>https://api.getfinancing.com/gateway/transact.cfm</gateway_url_production>
         <platform>staging</platform>
         <allowspecific>0</allowspecific>
         <min_order_total>1</min_order_total>
-        <max_order_total>1000000</max_order_total>
+        <max_order_total>3500000</max_order_total>
       </getfinancing>
     </payment>
   </default>

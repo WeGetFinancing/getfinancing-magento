@@ -16,7 +16,7 @@
                 </action>
             </block>
 -->
-<!-- FIXME: this is another; we move prototype down, so we read it after
+<!-- FIXME: this is another; we move prototype down, so we readd it after
             jquery
             <action method="removeItem">
                 <type>js</type>
@@ -48,9 +48,8 @@
         </block>
     </reference>
     </checkout_onepage_index>
-<!-- Disable counter on the homepage by default, not really used anymore. 
+
     <cms_index_index>
         <update handle="getfinancing_counter_landing" />
     </cms_index_index>
--->
 </layout>
