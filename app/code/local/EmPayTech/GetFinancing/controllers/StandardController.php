@@ -89,7 +89,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $session = Mage::getSingleton('checkout/session');
 
         $reservedOrderId = $session->getGetFinancingCustIdExt();
-        $order = $this->_convertQuote($reservedOrderId);
 
         $this->loadLayout();
         $this->renderLayout();
@@ -236,6 +235,8 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             return;
         }
 
+        // we have Quote here but not order, so this block is useless
+        /*
         $order = Mage::getModel('sales/order')
             ->loadByIncrementId($params['merchant_transaction_id']);
         // FIXME: sanity check that this is the right order with our id ?
@@ -246,6 +247,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             Mage::log("GetFinancing: transact: $message");
             Mage::throwException($message);
         }
+        */
 
         $actionMessage = "";
 
