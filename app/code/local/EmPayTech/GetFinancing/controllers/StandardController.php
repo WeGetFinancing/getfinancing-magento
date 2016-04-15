@@ -64,7 +64,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
         $response = $getfinancing->request($quote);
 
-        if ($response->status_code == "APPROVED") {
+        if (!empty($response->inv_id)) {
             $this->_redirect('getfinancing/standard/redirect',
                 array('_secure' => true));
         }
@@ -89,7 +89,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $session = Mage::getSingleton('checkout/session');
 
         $reservedOrderId = $session->getGetFinancingCustIdExt();
-        $order = $this->_convertQuote($reservedOrderId);
 
         $this->loadLayout();
         $this->renderLayout();
@@ -193,103 +192,86 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
     public function postbackAction()
     {
+
         $request = $this->getRequest();
 
-        if (! $request->isPost()) {
-            Mage::log('GetFinancing: postback: not a POST');
-            $this->_respondUnauthorized();
-            return;
-        }
         if (! $this->_validateAuth()) {
             $this->_respondUnauthorized();
             return;
         }
 
-        $params = $request->getPost();
-        $postbackMessage = 'GetFinancing: postback: received postback ' .
-            $params['function'];
+        $json = file_get_contents('php://input');
+        $params = json_decode($json,true);
+
+        //create the order
+        $reservedOrderId = $params['merchant_transaction_id'];
+        $order = $this->_convertQuote($reservedOrderId);
+
+        $postbackMessage = 'GetFinancing: postback: received postback ';
         Mage::log($postbackMessage);
         Mage::log("GetFinancing: postback: " . http_build_query($params));
 
-        if (! $this->_validateKeys(array('function')))
-            return;
-
-
-        switch ($params['function']) {
-            case 'transact':
-                return $this->_postbackTransact();
-            case 'update_customer':
-                return $this->_postbackUpdateCustomer();
-            default:
-                $this->_error("unknown function " . $params['function']);
-                return;
-        }
+        return $this->_postbackTransact();
     }
 
     private function _postbackTransact()
     {
+
         $request = $this->getRequest();
-        $params = $request->getPost();
+        $json = file_get_contents('php://input');
+        $params = json_decode($json,true);
+        Mage::log(var_export($params,1));
 
-        $allowed = array(
-            'function' => array('transact'),
-            'inv_status' => array('Auth', 'AuthOnly'),
-            'method' => array('void', 'purchase')
-        );
-
-        if (! $this->_validateParams($allowed, $params)) {
-            return;
-        }
 
         $postbackMessage = 'GetFinancing: transact: received postback ' .
-            $params['function'] . '/' .
-            $params['inv_status'] . '/' .
-            $params['method'] .
-            ' for inv_id ' . $params['inv_id'];
+            $params['updates']['status'] . '/' .
+            $params['request_token'] .
+            ' for inv_id ' . $params['merchant_transaction_id'];
 
-        Mage::log($postbackMessage);
 
-        if (!array_key_exists('cust_id_ext', $params)) {
-            Mage::log('GetFinancing: transact: no cust_id_ext specified');
+
+        if (!array_key_exists('merchant_transaction_id', $params)) {
+            Mage::log('GetFinancing: transact: no merchant_transaction_id specified');
             return;
         }
 
+        // we have Quote here but not order, so this block is useless
+        /*
         $order = Mage::getModel('sales/order')
-            ->loadByIncrementId($params['cust_id_ext']);
+            ->loadByIncrementId($params['merchant_transaction_id']);
         // FIXME: sanity check that this is the right order with our id ?
         // FIXME: may not have order yet, for purchase/AuthOnly
         if (!$order->getId()) {
-            $message = "The order for cust_id_ext "
-                . $params['cust_id_ext'] . " could not be found.";
+            $message = "The order for merchant_transaction_id "
+                . $params['merchant_transaction_id'] . " could not be found.";
             Mage::log("GetFinancing: transact: $message");
-            // do not throw an error, this happens if the order was not created
-            // need to send OK to count as correct
-            print "OK\n";
-            return;
+            Mage::throwException($message);
         }
+        */
 
         $actionMessage = "";
 
-        if ($params['method'] == 'void') {
+        if ($params['updates']['status'] == 'void') {
             if ($order->getState() !=
                 Mage_Sales_Model_Order::STATE_CANCELED) {
                 $this->_setState($order,
                     Mage_Sales_Model_Order::STATE_CANCELED);
                 $actionMessage = 'order canceled by postback.';
             }
-        } else if ($params['method'] == 'purchase') {
-            if ($params['inv_status'] == 'AuthOnly') {
-                $order = $this->_convertQuote($params['cust_id_ext']);
-            } else if ($params['inv_status'] == 'Auth') {
-                if ($order->getState() !=
-                    Mage_Sales_Model_Order::STATE_PROCESSING) {
-                    $this->_setState($order,
-                        Mage_Sales_Model_Order::STATE_PROCESSING);
-                    $actionMessage = 'order loan approved, ready to ship.';
-                }
-            } else {
-                Mage::log('GetFinancing: transact: Unknown inv_action '
-                    . $params['inv_action']);
+        }
+        else if ($params['updates']['status'] == 'approved') {
+            if ($order->getState() !=
+                Mage_Sales_Model_Order::STATE_PROCESSING) {
+                $this->_setState($order,
+                    Mage_Sales_Model_Order::STATE_PROCESSING);
+                $actionMessage = 'order loan approved, ready to ship.';
+            }
+        } else if ($params['updates']['status'] == 'preapproved') {
+            if ($order->getState() !=
+                Mage_Sales_Model_Order::STATE_PENDING_PAYMENT) {
+                $this->_setState($order,
+                    Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
+                $actionMessage = 'order loan Pre-approved, Waiting for payment.';
             }
         } else {
             Mage::log('GetFinancing: transact: Unknown method '

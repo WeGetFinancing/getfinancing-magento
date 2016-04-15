@@ -213,6 +213,8 @@ class GetFinancing_Magento extends GetFinancing
         $description = substr($description, 0, -2);
         $this->log("request: description " . $description);
 
+        //version 0.3
+        /*
         $fields = array(
             'cust_fname'=> $billingaddress->getData('firstname'),
             'cust_lname'=> $billingaddress->getData('lastname'),
@@ -251,11 +253,11 @@ class GetFinancing_Magento extends GetFinancing
                 Mage::throwException($message);
                 break;
             case "APPROVED":
-                /* store application url in session so our phtml can use them */
+                /* store application url in session so our phtml can use them /
                 $this->getSession()->setGetFinancingApplicationURL((string) $response->udf02);
                 $this->getSession()->setGetFinancingCustId((string) $response->cust_id);
                 $this->getSession()->setGetFinancingInvId((string) $response->inv_id);
-                /* store response values on quote too */
+                /* store response values on quote too /
                 // FIXME: these don't actually persist at all when saved
                 //        get them from postback instead
                 /*
@@ -263,16 +265,82 @@ class GetFinancing_Magento extends GetFinancing
                 $quote->setGetFinancingCustId((string) $response->cust_id);
                 $quote->setGetFinancingInvId((string) $response->inv_id);
                 $quote->save();
-                */
+                /
                 break;
             default:
-                /* throwing an exception makes us stay on this page so we can repeat */
+                /* throwing an exception makes us stay on this page so we can repeat /
                 $message = "Unhandled response status code " . $response->status_code;
                 $this->log("request: $message");
                 Mage::throwException($message);
         }
+        */
+        //version 1.9
+        $gf_data = array(
+            'amount'           => $totals,
+            'product_info'     => $description,
+            'first_name'       => $billingaddress->getData('firstname'),
+            'last_name'        => $billingaddress->getData('lastname'),
+            'shipping_address' => array(
+                'street1'  => $billingaddress->getData('street'),
+                'city'    => $billingaddress->getData('city'),
+                'state'   => $billingaddress->getData('region'),
+                'zipcode' => $billingaddress->getData('postcode')
+            ),
+            'billing_address' => array(
+                'street1'  => $shippingaddress->getData('street'),
+                'city'    => $shippingaddress->getData('city'),
+                'state'   => $shippingaddress->getData('region'),
+                'zipcode' => $shippingaddress->getData('postcode')
+            ),
+            'email'            => $email,
+            'merchant_loan_id' => (string)$cust_id_ext,
+            'version' => '1.9'
+        );
 
-        return $response;
+        $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');
+        $username = $paymentMethod->getConfigData('username');
+        $password = $paymentMethod->getConfigData('password');
+
+        $body_json_data = json_encode($gf_data);
+        $header_auth = base64_encode($username . ":" . $password);
+
+
+        if ($paymentMethod->getConfigData('platform') == "staging") {
+            $url_to_post = 'https://api-test.getfinancing.com/merchant/';
+        } else {
+            $url_to_post = 'https://api.getfinancing.com/merchant/';
+        }
+
+        $url_to_post .= $paymentMethod->getConfigData('merch_id')  . '/requests';
+
+        $post_args = array(
+            'body' => $body_json_data,
+            'timeout' => 60,     // 60 seconds
+            'blocking' => true,  // Forces PHP wait until get a response
+            'sslverify' => false,
+            'headers' => array(
+              'Content-Type' => 'application/json',
+              'Authorization' => 'Basic ' . $header_auth,
+              'Accept' => 'application/json'
+             )
+        );
+
+        $gf_response = $this->_remote_post( $url_to_post, $post_args );
+
+        if ($gf_response === false) {
+          $message = "GF connection failure";
+          $this->log("request: $post_args");
+          Mage::throwException($message);
+        }
+
+        $gf_response = json_decode($gf_response);
+
+        $this->getSession()->setGetFinancingApplicationURL((string) $gf_response->href);
+        //$this->getSession()->setGetFinancingCustId((string) $gf_response->customer_id);
+        $this->getSession()->setGetFinancingInvId((string) $gf_response->inv_id);
+
+
+        return $gf_response;
     }
 
      /**
@@ -283,6 +351,47 @@ class GetFinancing_Magento extends GetFinancing
     public function getSession()
     {
         return Mage::getSingleton('checkout/session');
+    }
+
+    /**
+     * Set up RemotePost / Curl.
+     */
+    function _remote_post($url,$args=array()) {
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $args['body']);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Magento - GetFinancing Payment Module ');
+        if (defined('CURLOPT_POSTFIELDSIZE')) {
+            curl_setopt($curl, CURLOPT_POSTFIELDSIZE, 0);
+        }
+        curl_setopt($curl, CURLOPT_TIMEOUT, $args['timeout']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        $array_headers = array();
+        foreach ($args['headers'] as $k => $v) {
+            $array_headers[] = $k . ": " . $v;
+        }
+        if (sizeof($array_headers)>0) {
+          curl_setopt($curl, CURLOPT_HTTPHEADER, $array_headers);
+        }
+
+        if (strtoupper(substr(@php_uname('s'), 0, 3)) === 'WIN') {
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        $resp = curl_exec($curl);
+        curl_close($curl);
+
+        if (!$resp) {
+          return false;
+        } else {
+          return $resp;
+        }
     }
 
 

@@ -14,6 +14,7 @@
           <show_in_default>1</show_in_default>
           <show_in_website>1</show_in_website>
           <show_in_store>0</show_in_store>
+          <frontend_model>EmPayTech_GetFinancing_Adminhtml_Model_System_Config_Source_Payment</frontend_model>
           <fields>
             <!-- is this payment method active for the website? -->
             <active translate="label">
@@ -51,22 +52,7 @@
               <show_in_website>1</show_in_website>
               <show_in_store>0</show_in_store>
             </title>
-            <gateway_url_staging translate="label">
-              <label>Gateway URL for staging</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>3</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </gateway_url_staging>
-            <gateway_url_production translate="label">
-              <label>Gateway URL for production</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>4</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </gateway_url_production>
+
             <platform translate="label">
               <label>Platform</label>
               <frontend_type>select</frontend_type>

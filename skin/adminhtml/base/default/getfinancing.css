@@ -1,0 +1,11 @@
+.adminLogoGF {
+    width:700px;
+    height:100px;
+    background:url(../../default/default/images/getfinancing/getfinancing-logo.png) no-repeat 0 2px;
+    background-size: 150px;
+}
+.adminpGF {
+    margin-left: 170px;
+    padding: 6px;
+
+}
