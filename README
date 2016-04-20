@@ -1,6 +1,8 @@
 Installing the module
 ---------------------
+The latest version of this module can be installed through Magento Connect. 
 
+If you see any issue on the process or you have an old version, these are the manual instructions:
 - unzip the .zip file
 - copy over the app and lib trees
   - over ftp:
