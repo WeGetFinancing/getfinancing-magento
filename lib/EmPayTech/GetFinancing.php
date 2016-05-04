@@ -133,22 +133,6 @@ class GetFinancing_Magento extends GetFinancing
             return;
         }
 
-        $key = "gateway_url_$platform";
-        $url = $paymentMethod->getConfigData($key);
-        if (!$url) {
-            $message = "Please specify '$key' in the configuration of the payment method.";
-            $errors = TRUE;
-        }
-
-        if ($errors) {
-            $this->log($message);
-            $this->misconfigured($message, $key);
-
-            /* FIXME: can we return half-constructed ? */
-            return;
-        }
-
-
         $this->configured = TRUE;
 
         parent::__construct($url, $merch_id, $username, $password);
