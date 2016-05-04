@@ -211,10 +211,10 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         Mage::log($postbackMessage);
         Mage::log("GetFinancing: postback: " . http_build_query($params));
 
-        return $this->_postbackTransact();
+        return $this->_postbackTransact($order);
     }
 
-    private function _postbackTransact()
+    private function _postbackTransact($order)
     {
 
         $request = $this->getRequest();
