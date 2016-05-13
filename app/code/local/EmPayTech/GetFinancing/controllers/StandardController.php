@@ -251,7 +251,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
         $actionMessage = "";
 
-        if ($params['updates']['status'] == 'void') {
+        if ($params['updates']['status'] == 'rejected') {
             if ($order->getState() !=
                 Mage_Sales_Model_Order::STATE_CANCELED) {
                 $this->_setState($order,
