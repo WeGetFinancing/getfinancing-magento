@@ -277,6 +277,7 @@ class GetFinancing_Magento extends GetFinancing
                 'zipcode' => $shippingaddress->getData('postcode')
             ),
             'email'            => $email,
+            'phone'            => $billingaddress->getData('telephone'),
             'merchant_loan_id' => (string)$cust_id_ext,
             'version' => '1.9'
         );
