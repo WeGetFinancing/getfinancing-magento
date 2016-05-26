@@ -124,6 +124,9 @@
         <allowspecific>0</allowspecific>
         <min_order_total>1</min_order_total>
         <max_order_total>3500000</max_order_total>
+        <!-- Merchant token is required for MPE to work -->
+        <merchant_token></merchant_token>
+        <!-- by default MPE is inactive -->
         <mpe_enabled>0</mpe_enabled>
       </getfinancing>
     </payment>
