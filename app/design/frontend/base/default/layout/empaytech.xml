@@ -26,9 +26,10 @@
     <checkout_onepage_index>
         <reference name="right">
             <block type="core/template" name="getfinancing_counter_payment" after="checkout.onepage.payment" template="empaytech/getfinancing/payment.phtml">
-        </block>
-    </reference>
+            </block>
+        </reference>
     </checkout_onepage_index>
+    
 
     <cms_index_index>
         <update handle="getfinancing_counter_landing" />
