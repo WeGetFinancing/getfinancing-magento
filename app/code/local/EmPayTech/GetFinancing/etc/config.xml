@@ -124,6 +124,7 @@
         <allowspecific>0</allowspecific>
         <min_order_total>1</min_order_total>
         <max_order_total>3500000</max_order_total>
+        <mpe_enabled>0</mpe_enabled>
       </getfinancing>
     </payment>
   </default>
