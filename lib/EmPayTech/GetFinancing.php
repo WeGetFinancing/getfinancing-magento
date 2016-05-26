@@ -114,7 +114,7 @@ class GetFinancing_Magento extends GetFinancing
 
         foreach ($keys as $key) {
             $$key = $paymentMethod->getConfigData($key);
-            if (!$$key) {
+            if (!$$key && $key != "mpe_enabled" && $key != "merchant_token") {
                 $message = "Please specify '$key' in the configuration.";
                 $errorkey = $key;
                 $errors = TRUE;
