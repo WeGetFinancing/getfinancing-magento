@@ -42,8 +42,7 @@ gfjQuery(document).ready(function() {
             var oldjQuery = jQuery;
             jQuery = gfjQuery;
 
-            var mpeEnabled = <?php echo $getfinancing->mpe_enabled && 
-                isset($getfinancing->merchant_token); ?>
+            var mpeEnabled = <?php echo $getfinancing->mpe_enabled && isset($getfinancing->merchant_token)? 1:0; ?>;
 
             if (response.url.include('prevStep=shipping_method') && mpeEnabled) {
                 jQuery(document).gfSimulator({
