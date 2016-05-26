@@ -121,6 +121,7 @@
               <show_in_website>1</show_in_website>
               <show_in_store>0</show_in_store>
             </max_order_total>
+            <!-- Adds the MPE to checkout when set to true  -->
             <mpe_enabled translate="label">
               <label>Enable MPE at checkout</label>
               <frontend_type>select</frontend_type>
