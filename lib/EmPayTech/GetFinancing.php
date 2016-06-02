@@ -197,67 +197,6 @@ class GetFinancing_Magento extends GetFinancing
         $description = substr($description, 0, -2);
         $this->log("request: description " . $description);
 
-        //version 0.3
-        /*
-        $fields = array(
-            'cust_fname'=> $billingaddress->getData('firstname'),
-            'cust_lname'=> $billingaddress->getData('lastname'),
-            'cust_email'=> $email,
-
-            'bill_addr_address'=> $billingaddress->getData('street'),
-            'bill_addr_city'=> $billingaddress->getData('city'),
-            'bill_addr_state'=> $billingaddress->getData('region'),
-            'bill_addr_zip'=> $billingaddress->getData('postcode'),
-
-            'ship_addr_address'=> $shippingaddress->getData('street'),
-            'ship_addr_city'=> $shippingaddress->getData('city'),
-            'ship_addr_state'=> $shippingaddress->getData('region'),
-            'ship_addr_zip'=> $shippingaddress->getData('postcode'),
-
-            'version' => '0.3',
-            'response_format' => 'XML',
-            // FIXME
-            'cust_id_ext'=> $cust_id_ext,
-            'inv_action' => 'AUTH_ONLY',
-            'inv_value' => $totals,
-            'udf02' => $description,
-        );
-
-        $response = parent::request($fields);
-
-        switch ($response->status_code) {
-            case "GW_NOT_AUTH":
-                $message = "request: response status: " . $response->status_string;
-                $message .= "  Please verify your authentication details.";
-                $this->misconfigured($message, "merch_id/username/password");
-                break;
-            case "GW_MISSING_FIELD":
-                $message = "Missing a field in the request: " . $response->status_string;
-                $this->log("request: $message");
-                Mage::throwException($message);
-                break;
-            case "APPROVED":
-                /* store application url in session so our phtml can use them /
-                $this->getSession()->setGetFinancingApplicationURL((string) $response->udf02);
-                $this->getSession()->setGetFinancingCustId((string) $response->cust_id);
-                $this->getSession()->setGetFinancingInvId((string) $response->inv_id);
-                /* store response values on quote too /
-                // FIXME: these don't actually persist at all when saved
-                //        get them from postback instead
-                /*
-                $quote->setGetFinancingApplicationURL((string) $response->udf02);
-                $quote->setGetFinancingCustId((string) $response->cust_id);
-                $quote->setGetFinancingInvId((string) $response->inv_id);
-                $quote->save();
-                /
-                break;
-            default:
-                /* throwing an exception makes us stay on this page so we can repeat /
-                $message = "Unhandled response status code " . $response->status_code;
-                $this->log("request: $message");
-                Mage::throwException($message);
-        }
-        */
         //version 1.9
         $gf_data = array(
             'amount'           => $totals,
@@ -277,8 +216,11 @@ class GetFinancing_Magento extends GetFinancing
                 'zipcode' => $shippingaddress->getData('postcode')
             ),
             'email'            => $email,
+            'phone'            => $billingaddress->getData('telephone'),
             'merchant_loan_id' => (string)$cust_id_ext,
-            'version' => '1.9'
+            'version' => '1.9',
+            'software_name' => 'magento',
+            'software_version' => $version
         );
 
         $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');

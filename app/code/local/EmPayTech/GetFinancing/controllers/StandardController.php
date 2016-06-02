@@ -207,6 +207,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $params = json_decode($json,true);
 
         //create the order
+        // FIXME: do not create the order unless the postback is approved. (rsa 05/16)
         $reservedOrderId = $params['merchant_transaction_id'];
         $order = $this->_convertQuote($reservedOrderId);
 
@@ -237,20 +238,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
             Mage::log('GetFinancing: transact: no merchant_transaction_id specified');
             return;
         }
-
-        // we have Quote here but not order, so this block is useless
-        /*
-        $order = Mage::getModel('sales/order')
-            ->loadByIncrementId($params['merchant_transaction_id']);
-        // FIXME: sanity check that this is the right order with our id ?
-        // FIXME: may not have order yet, for purchase/AuthOnly
-        if (!$order->getId()) {
-            $message = "The order for merchant_transaction_id "
-                . $params['merchant_transaction_id'] . " could not be found.";
-            Mage::log("GetFinancing: transact: $message");
-            Mage::throwException($message);
-        }
-        */
 
         $actionMessage = "";
 
