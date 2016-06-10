@@ -53,12 +53,23 @@ application process.
         // finishing all the steps
 
 <?php
+/*
     $checkout_url = Mage::getUrl('checkout/onepage',
         array("_secure" => (
             isset($_SERVER["HTTPS"]) &&
             ($_SERVER["HTTPS"] === "on")
         ))
     );
+      */
+
+      $session = Mage::getSingleton('checkout/session');
+      $quoteId = $session->getQuoteId();
+      $quote = Mage::getModel("sales/quote")->load($quoteId);
+      $quote->setIsActive(false)->save();
+      $session->clear();
+      Mage::log("GetFinancing: session quoteId ". $quoteId);
+
+    $checkout_url = Mage::getUrl("getfinancing/standard/cancel",array('_query' => array("q" => $quoteId)));
 ?>
         gfjQuery('#getfinancing-message').html(
             'Payment aborted.  Redirecting you to the payment choice.<br/>' +

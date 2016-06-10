@@ -55,7 +55,8 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         if (!$quoteId) $quoteId = 11;
         $quote = Mage::getModel("sales/quote")->load($quoteId);
 
-        $reservedOrderId = $session->getGetFinancingCustIdExt();
+        //$reservedOrderId = $session->getGetFinancingCustIdExt();
+        $reservedOrderId = $quoteId;
         $quote->setReservedOrderId($reservedOrderId);
         Mage::log('GetFinancing: requestAction: request loan for cust_id_ext '
             . $reservedOrderId);
@@ -63,9 +64,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $getfinancing = new GetFinancing_Magento($this->getPaymentMethod());
 
         $response = $getfinancing->request($quote);
-
-        $quote->setIsActive(false);
-        $quote->save();
 
         if (!empty($response->inv_id)) {
             $this->_redirect('getfinancing/standard/redirect',
@@ -80,8 +78,40 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
      */
     public function redirectAction()
     {
+      $session = Mage::getSingleton('checkout/session');
+      $quoteId = $session->getQuoteId();
+      $quote = Mage::getModel("sales/quote")->load($quoteId);
+
+      $cart = Mage::getModel('checkout/cart');
+
+      //$session->unsQuoteId();
+      //$session->setQuoteId(null);
+      //$quote->setIsActive(false)->save();
+
+
         $this->loadLayout();
         $this->renderLayout();
+
+
+/*
+        $cartItems = $cart->getItems();
+        $quote->setIsActive(false)->save();
+
+        $cart->init();
+        //if ($cart->getItemsCount()<=0)
+          foreach ($cartItems as $item) {
+              try {
+                $_product = Mage::getModel('catalog/product')->load($item->getProductId());
+                $cart->addProduct($_product, array( 'qty' => $item->getQty()));
+              } catch (Mage_Core_Exception $e) {
+                  $session->addError($this->__($e->getMessage()));
+                  Mage::logException($e);
+                  continue;
+              }
+          }
+          $cart->save();
+          Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+*/
     }
 
     /**
@@ -306,6 +336,45 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
         $order->save();
     }
 
+    /**
+     * When customer cancel payment from CECA (UrlKO)
+     *
+     */
+    public function cancelAction()
+    {
+
+      $session = Mage::getSingleton('checkout/session');
+      $quoteId = $this->getRequest()->getParam('q');
+      $quote = Mage::getModel("sales/quote")->load($quoteId);
+      $customer = $quote->getCustomer();
+      $store_id = $quote->getStoreId();
+      $reserved_order_id = $quote->reserveOrderId()->getReservedOrderId();
+      $cart = Mage::getModel('checkout/cart');
+      $session->clear();
+      $quoteObj = Mage::getModel('sales/quote');
+      $quoteObj->merge($quote);
+
+        $quoteObj->setIsActive(true)->save();
+        $quoteObj->setCustomer($customer)->save();
+        $quoteObj->setStoreId($store_id)->save();
+        $quoteObj->setReservedOrderId($reserved_order_id)->save();
+        $quote_id = $quoteObj->getId();
+
+        $quoteObj->collectTotals()->save();
+
+        $session->setQuoteId($quote_id);
+
+
+
+        Mage::log("GetFinancing: LastQuoteId ". $lastQuoteId);
+        Mage::log("GetFinancing: quoteId ". $quoteId);
+
+        //Mage::getSingleton(‘core/session’)->addError(‘Error message’);
+        $session->addError('There was a payment error, please try it again.');
+        $this->_redirect('checkout/cart');
+    }
+
+
     /*
      * Convert a quote to an order in state holded (before: payment_review)
      * Called on AuthOnly/purchase callback and through onComplete callback
@@ -324,7 +393,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
         // new order, so look up quote for this order
         $quote = Mage::getModel("sales/quote")->load(
-            $reservedOrderId, 'reserved_order_id');
+            $reservedOrderId, 'entity_id');
         // FIXME: no way to get persisted additional info
         /*
         $custId = $quote->getGetFinancingCustId();
