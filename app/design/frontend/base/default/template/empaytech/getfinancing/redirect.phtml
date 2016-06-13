@@ -62,6 +62,9 @@ application process.
     );
       */
 
+      // when redirecting client to the payment page we disable the quote
+      // and create the ok and ko urls. Ko url include the quote id parameter
+      // to avoid the duplicated id's problem
       $session = Mage::getSingleton('checkout/session');
       $quoteId = $session->getQuoteId();
       $quote = Mage::getModel("sales/quote")->load($quoteId);
