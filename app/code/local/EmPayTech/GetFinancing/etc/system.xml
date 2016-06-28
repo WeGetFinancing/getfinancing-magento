@@ -123,7 +123,7 @@
             </max_order_total>
             <!-- Merchant token is required for MPE to work -->
             <merchant_token translate="label">
-              <label>GetFinancing access token (Required for MPE to work)</label>
+              <label>GetFinancing access token (Required for Monthly Price Estimator to work)</label>
               <frontend_type>text</frontend_type>
               <sort_order>100</sort_order>
               <show_in_default>1</show_in_default>
