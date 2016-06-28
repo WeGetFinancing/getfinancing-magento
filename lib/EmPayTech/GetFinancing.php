@@ -24,11 +24,13 @@ class GetFinancing
      * @param string $username
      * @param string $password
      */
-    public function __construct($url, $merch_id, $username, $password) {
+    public function __construct($url, $merch_id, $username, $password, $merchant_token, $mpe_enabled) {
         $this->url = $url;
         $this->merch_id = $merch_id;
         $this->_username = $username;
         $this->_password = $password;
+        $this->merchant_token = $merchant_token;
+        $this->mpe_enabled = $mpe_enabled;
     }
 
     public function getDataspace() {
@@ -107,11 +109,12 @@ class GetFinancing_Magento extends GetFinancing
         $errors = FALSE;
         $message = "";
 
-        $keys = array("platform", "merch_id", "username", "password");
+        $keys = array("platform", "merch_id", "username", 
+                "password", "merchant_token", "mpe_enabled");
 
         foreach ($keys as $key) {
             $$key = $paymentMethod->getConfigData($key);
-            if (!$$key) {
+            if (!$$key && $key != "mpe_enabled" && $key != "merchant_token") {
                 $message = "Please specify '$key' in the configuration.";
                 $errorkey = $key;
                 $errors = TRUE;
@@ -135,7 +138,7 @@ class GetFinancing_Magento extends GetFinancing
 
         $this->configured = TRUE;
 
-        parent::__construct($url, $merch_id, $username, $password);
+        parent::__construct($url, $merch_id, $username, $password, $merchant_token, $mpe_enabled);
     }
 
     /* parent class implementations */

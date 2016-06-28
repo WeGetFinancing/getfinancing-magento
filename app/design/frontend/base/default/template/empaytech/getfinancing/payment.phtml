@@ -1,5 +1,4 @@
-<script type="text/javascript"
-        src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 </script>
 <script type="text/javascript"
         src="https://cdn.getfinancing.com/libs/1.0/getfinancing.js">
@@ -28,13 +27,32 @@
 
     $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');
     $getfinancing = new GetFinancing_Magento($paymentMethod);
+
+    $quote = Mage::getModel('checkout/session')->getQuote();
+    $quoteData= $quote->getData();
+    $grandTotal=$quoteData['grand_total'];
 ?>
+
+
+
 
 gfjQuery(document).ready(function() {
     if (Ajax.Responders) {
         Ajax.Responders.register({onComplete: function (response) {
             var oldjQuery = jQuery;
             jQuery = gfjQuery;
+
+            var mpeEnabled = <?php echo $getfinancing->mpe_enabled && isset($getfinancing->merchant_token)? 1:0; ?>;
+
+            if (response.url.include('prevStep=shipping_method') && mpeEnabled) {
+                jQuery(document).gfSimulator({
+                    debug: true,
+                    token: "<?php echo $getfinancing->merchant_token ?>",
+                    price: <?php echo $grandTotal ?>,
+                    containerSelector: "#dt_method_getfinancing>label",
+                    customText: "just $/month"
+                });
+            }
 
             // console.log('response url: ' + response.url);
             if (response.url.include('toStep=payment')) {
