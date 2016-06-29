@@ -1,2 +1,4 @@
 gitversion
 *.pyc
+app/exception.log
+app/exception.log
