@@ -53,12 +53,26 @@ application process.
         // finishing all the steps
 
 <?php
+/*
     $checkout_url = Mage::getUrl('checkout/onepage',
         array("_secure" => (
             isset($_SERVER["HTTPS"]) &&
             ($_SERVER["HTTPS"] === "on")
         ))
     );
+      */
+
+      // when redirecting client to the payment page we disable the quote
+      // and create the ok and ko urls. Ko url include the quote id parameter
+      // to avoid the duplicated id's problem
+      $session = Mage::getSingleton('checkout/session');
+      $quoteId = $session->getQuoteId();
+      $quote = Mage::getModel("sales/quote")->load($quoteId);
+      $quote->setIsActive(false)->save();
+      $session->clear();
+      Mage::log("GetFinancing: session quoteId ". $quoteId);
+
+    $checkout_url = Mage::getUrl("getfinancing/standard/cancel",array('_query' => array("q" => $quoteId)));
 ?>
         gfjQuery('#getfinancing-message').html(
             'Payment aborted.  Redirecting you to the payment choice.<br/>' +
