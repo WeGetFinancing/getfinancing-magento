@@ -121,15 +121,6 @@
               <show_in_website>1</show_in_website>
               <show_in_store>0</show_in_store>
             </max_order_total>
-            <!-- Merchant token is required for MPE to work -->
-            <merchant_token translate="label">
-              <label>GetFinancing access token (Required for Monthly Price Estimator to work)</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>100</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-            </merchant_token>
             <!-- Adds the MPE to checkout when set to true  -->
             <mpe_enabled translate="label">
               <label>Enable Monthly Price Estimator at checkout</label>
@@ -141,6 +132,15 @@
               <show_in_website>1</show_in_website>
               <show_in_store>0</show_in_store>
             </mpe_enabled>
+            <!-- Merchant token is required for MPE to work -->
+            <merchant_token translate="label">
+              <label>GetFinancing access token (Required for Monthly Price Estimator to work)</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>100</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </merchant_token>
           </fields>
         </getfinancing>
       </groups>
