@@ -75,6 +75,9 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     if (!empty($response->inv_id)) {
       $this->_redirect('getfinancing/standard/redirect',
       array('_secure' => true));
+    }else{
+      $session->addError('There was a payment error, please try it again.');
+      $this->_redirect('checkout/cart');
     }
   }
 
@@ -356,11 +359,12 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     // we link the current session with the new quote id.
     $session->setQuoteId($quote_id);
 
-    Mage::log("GetFinancing: LastQuoteId ". $lastQuoteId);
     Mage::log("GetFinancing: quoteId ". $quoteId);
 
     // We show an error to client an redirect to the cart page.
-    $session->addError('There was a payment error, please try it again.');
+    if ($session->getMessages()->count() <= 0){
+      $session->addError('There was a payment error, please try it again.');
+    }
     $this->_redirect('checkout/cart');
   }
 

@@ -24,8 +24,8 @@ class GetFinancing
      * @param string $username
      * @param string $password
      */
-    public function __construct($url, $merch_id, $username, $password, $merchant_token, $mpe_enabled) {
-        $this->url = $url;
+    public function __construct( $merch_id, $username, $password, $merchant_token, $mpe_enabled) {
+        $this->url = '';
         $this->merch_id = $merch_id;
         $this->_username = $username;
         $this->_password = $password;
@@ -42,6 +42,7 @@ class GetFinancing
     }
 
     public function log($msg) {
+        Mage::log('GetFinancing:' . $msg);
     }
 
     function request($fields) {
@@ -109,7 +110,7 @@ class GetFinancing_Magento extends GetFinancing
         $errors = FALSE;
         $message = "";
 
-        $keys = array("platform", "merch_id", "username", 
+        $keys = array("platform", "merch_id", "username",
                 "password", "merchant_token", "mpe_enabled");
 
         foreach ($keys as $key) {
@@ -138,7 +139,7 @@ class GetFinancing_Magento extends GetFinancing
 
         $this->configured = TRUE;
 
-        parent::__construct($url, $merch_id, $username, $password, $merchant_token, $mpe_enabled);
+        parent::__construct($merch_id, $username, $password, $merchant_token, $mpe_enabled);
     }
 
     /* parent class implementations */
@@ -313,14 +314,22 @@ class GetFinancing_Magento extends GetFinancing
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         }
 
+        $this->log("request: " . var_export($args['body'],1));
+        $this->log("url to post: $url");
+
         $resp = curl_exec($curl);
         curl_close($curl);
 
         if (!$resp) {
+          $msg = "curl_exec error: ". curl_error($curl);
+          $this->log($msg);
+          Mage::throwException("GetFinancing: $msg");
           return false;
         } else {
           return $resp;
         }
+
+        $this->log('response: ' . $resp->asXML());
     }
 
 
