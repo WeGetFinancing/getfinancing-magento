@@ -376,6 +376,16 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
   */
   private function _convertQuote($reservedOrderId) // , $custId, $invId)
   {
+
+    // new order, so look up quote for this order
+    // we  updated the code to search using entity_id (quote id) instead
+    // of the reserved_order_id in order to avoid duplicated ids send to gf.
+    $quote = Mage::getModel("sales/quote")->load(
+    $reservedOrderId, 'entity_id');
+
+    //this is the real $reservedOrderId, the one received in the function
+    //is the quote id
+    $reservedOrderId  = $quote->getReservedOrderId();
     // LOOK FOR EXISTING ORDER TO AVOID DUPLICATES
     $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
     if ($order->getId()) {
@@ -385,11 +395,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
       return $order;
     }
 
-    // new order, so look up quote for this order
-    // we  updated the code to search using entity_id (quote id) instead
-    // of the reserved_order_id in order to avoid duplicated ids send to gf.
-    $quote = Mage::getModel("sales/quote")->load(
-    $reservedOrderId, 'entity_id');
     // FIXME: no way to get persisted additional info
     /*
     $custId = $quote->getGetFinancingCustId();

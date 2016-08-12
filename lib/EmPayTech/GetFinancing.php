@@ -42,7 +42,7 @@ class GetFinancing
     }
 
     public function log($msg) {
-        Mage::log('GetFinancing:' . $msg);
+        Mage::log('GetFinancing:' . $msg,Zend_Log::WARN);
     }
 
     function request($fields) {
@@ -103,6 +103,7 @@ class GetFinancing
 
 class GetFinancing_Magento extends GetFinancing
 {
+    const BASE = 'getfinancing/standard';
     public function __construct($paymentMethod) {
 
         $this->configured = FALSE;
@@ -194,17 +195,28 @@ class GetFinancing_Magento extends GetFinancing
         $description = "";
         $cartHelper = Mage::helper('checkout/cart');
         $items = $cartHelper->getCart()->getItems();
-
+        $cart_items = array();
         foreach ($items as $item) {
+
+            $cart_items[]=array('sku' => $item->getSku(),
+                                'display_name' => $item->getName(),
+                                'unit_price' => number_format($item->getPrice(), 2),
+                                'quantity' => $item->getQty(),
+                                'unit_tax' => $item->getTaxAmount()
+                                );
             $description .= $item->getName() . " (" . $item->getQty() . "), ";
         }
+        $cart_items = json_encode($cart_items);
         $description = substr($description, 0, -2);
         $this->log("request: description " . $description);
-
+        $this->setCacllbackUrl();
+        $this->setUrlOk();
+        $this->setUrlKo();
         //version 1.9
         $gf_data = array(
             'amount'           => $totals,
             'product_info'     => $description,
+            //'cart_items'      => $cart_items,
             'first_name'       => $billingaddress->getData('firstname'),
             'last_name'        => $billingaddress->getData('lastname'),
             'shipping_address' => array(
@@ -224,7 +236,10 @@ class GetFinancing_Magento extends GetFinancing
             'merchant_loan_id' => (string)$cust_id_ext,
             'version' => '1.9',
             'software_name' => 'magento',
-            'software_version' => $version
+            'software_version' => $version,
+            'postback_url' => $this->_callback_url,
+            'failure_url' => $this->_urlKo,
+            'success_url' => $this->_urlOk
         );
 
         $paymentMethod = Mage::getSingleton('getfinancing/paymentMethod');
@@ -358,6 +373,55 @@ class GetFinancing_Magento extends GetFinancing
                 'internal'      => true
             )
         ));
+    }
+
+    /**
+     * @param string $urlnok
+     * @throws Exception
+     */
+    public function setCacllbackUrl()
+    {
+      if (Mage::app()->getStore()->isFrontUrlSecure()){
+          $this->_callback_url=Mage::getUrl('',array('_forced_secure'=>true))."getfinancing/standard/postback";
+      }else{
+          $this->_callback_url=Mage::getUrl('',array('_forced_secure'=>false))."getfinancing/standard/postback";
+      }
+      $this->_callback_url = Mage::getModel('core/url')->sessionUrlVar($this->_callback_url);
+    }
+
+    /**
+     * @param string $urlok
+     * @throws Exception
+     */
+    public function setUrlOk()
+    {
+        $urlOk = $this->getUrl('success');
+        if (strlen(trim($urlOk)) > 0) {
+            $this->_urlOk = $urlOk;
+        } else {
+            throw new \Exception('UrlOk not defined');
+        }
+
+    }
+
+    /**
+     * @param string $urlnok
+     * @throws Exception
+     */
+    public function setUrlKo($urlKo = '')
+    {
+        $urlKo = $this->getUrl('cancel');
+        if (strlen(trim($urlKo)) > 0) {
+            $this->_urlKo = $urlKo;
+        } else {
+            throw new \Exception('UrlKo not defined');
+        }
+    }
+
+    public function getUrl($path)
+    {
+        $url = Mage::getUrl(self::BASE . "/$path");
+        return Mage::getModel('core/url')->sessionUrlVar($url);
     }
 
 }
