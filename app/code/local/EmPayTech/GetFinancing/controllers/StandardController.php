@@ -72,7 +72,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
     $response = $getfinancing->request($quote);
 
-    if (!empty($response->inv_id)) {
+    if (!empty($response->inv_id) && !empty($response->href) ) {
       $this->_redirect('getfinancing/standard/redirect',
       array('_secure' => true));
     }else{
