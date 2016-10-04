@@ -219,13 +219,13 @@ class GetFinancing_Magento extends GetFinancing
             //'cart_items'      => $cart_items,
             'first_name'       => $billingaddress->getData('firstname'),
             'last_name'        => $billingaddress->getData('lastname'),
-            'shipping_address' => array(
+            'billing_address' => array(
                 'street1'  => $billingaddress->getData('street'),
                 'city'    => $billingaddress->getData('city'),
                 'state'   => $billingaddress->getData('region'),
                 'zipcode' => $billingaddress->getData('postcode')
             ),
-            'billing_address' => array(
+            'shipping_address' => array(
                 'street1'  => $shippingaddress->getData('street'),
                 'city'    => $shippingaddress->getData('city'),
                 'state'   => $shippingaddress->getData('region'),
