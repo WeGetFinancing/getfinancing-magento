@@ -206,7 +206,7 @@ class GetFinancing_Magento extends GetFinancing
                                 );
             $description .= $item->getName() . " (" . $item->getQty() . "), ";
         }
-        $cart_items = json_encode($cart_items);
+//        $cart_items = json_encode($cart_items);
         $description = substr($description, 0, -2);
         $this->log("request: description " . $description);
         $this->setCacllbackUrl();
@@ -215,17 +215,17 @@ class GetFinancing_Magento extends GetFinancing
         //version 1.9
         $gf_data = array(
             'amount'           => $totals,
-            'product_info'     => $description,
-            //'cart_items'      => $cart_items,
+            //'product_info'     => $description,
+            'cart_items'      => $cart_items,
             'first_name'       => $billingaddress->getData('firstname'),
             'last_name'        => $billingaddress->getData('lastname'),
-            'billing_address' => array(
+            'shipping_address' => array(
                 'street1'  => $billingaddress->getData('street'),
                 'city'    => $billingaddress->getData('city'),
                 'state'   => $billingaddress->getData('region'),
                 'zipcode' => $billingaddress->getData('postcode')
             ),
-            'shipping_address' => array(
+            'billing_address' => array(
                 'street1'  => $shippingaddress->getData('street'),
                 'city'    => $shippingaddress->getData('city'),
                 'state'   => $shippingaddress->getData('region'),
