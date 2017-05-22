@@ -197,13 +197,14 @@ class GetFinancing_Magento extends GetFinancing
         $items = $cartHelper->getCart()->getItems();
         $cart_items = array();
         foreach ($items as $item) {
-
-            $cart_items[]=array('sku' => $item->getSku(),
+            if ($item->getPrice()>0) {
+                $cart_items[]=array('sku' => $item->getSku(),
                                 'display_name' => $item->getName(),
-                                'unit_price' => number_format($item->getPrice(), 2),
+                                'unit_price' => $item->getPrice(),
                                 'quantity' => $item->getQty(),
                                 'unit_tax' => $item->getTaxAmount()
                                 );
+            }
             $description .= $item->getName() . " (" . $item->getQty() . "), ";
         }
 //        $cart_items = json_encode($cart_items);
@@ -280,7 +281,7 @@ class GetFinancing_Magento extends GetFinancing
         }
 
         $gf_response = json_decode($gf_response);
-
+        
         $this->getSession()->setGetFinancingApplicationURL((string) $gf_response->href);
         //$this->getSession()->setGetFinancingCustId((string) $gf_response->customer_id);
         $this->getSession()->setGetFinancingInvId((string) $gf_response->inv_id);
