@@ -197,14 +197,12 @@ class GetFinancing_Magento extends GetFinancing
         $items = $cartHelper->getCart()->getItems();
         $cart_items = array();
         foreach ($items as $item) {
-            if ($item->getPrice()>0) {
                 $cart_items[]=array('sku' => $item->getSku(),
                                 'display_name' => $item->getName(),
                                 'unit_price' => $item->getPrice(),
                                 'quantity' => $item->getQty(),
                                 'unit_tax' => $item->getTaxAmount()
                                 );
-            }
             $description .= $item->getName() . " (" . $item->getQty() . "), ";
         }
 //        $cart_items = json_encode($cart_items);
