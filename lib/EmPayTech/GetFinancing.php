@@ -159,6 +159,17 @@ class GetFinancing_Magento extends GetFinancing
         );
     }
 
+    public function getAttributesText($item) {
+        $attributesText = '';
+        $attrs = $item->getProduct()->getTypeInstance(true)
+            ->getOrderOptions($item->getProduct())['attributes_info'];
+        foreach ($attrs as $v) { 
+            $attributesText.= ($attributesText!='')?', ':'';
+            $attributesText.= $v['label'].': '.$v['value']; 
+        }
+        return ($attributesText!=''?$attributesText:false); 
+    }
+
     /*
      * Mage_Sales_Model_Quote
      */
@@ -197,9 +208,11 @@ class GetFinancing_Magento extends GetFinancing
         $items = $cartHelper->getCart()->getItems();
         $cart_items = array();
         foreach ($items as $item) {
-                $cart_items[]=array('sku' => $item->getSku(),
-                                'display_name' => $item->getName(),
-                                'unit_price' => $item->getPrice(),
+        $displayName = $item->getName();        
+        $displayName.= ' '.($this->getAttributesText($item)?'('.$this->getAttributesText($item).')':'');
+            $cart_items[]=array('sku' => $item->getSku(),
+                                'display_name' => $displayName,
+                                'unit_price' => number_format($item->getPrice(), 2),
                                 'quantity' => $item->getQty(),
                                 'unit_tax' => $item->getTaxAmount()
                                 );
@@ -279,7 +292,7 @@ class GetFinancing_Magento extends GetFinancing
         }
 
         $gf_response = json_decode($gf_response);
-        
+
         $this->getSession()->setGetFinancingApplicationURL((string) $gf_response->href);
         //$this->getSession()->setGetFinancingCustId((string) $gf_response->customer_id);
         $this->getSession()->setGetFinancingInvId((string) $gf_response->inv_id);
