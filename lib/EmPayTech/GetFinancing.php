@@ -212,7 +212,7 @@ class GetFinancing_Magento extends GetFinancing
         $displayName.= ' '.($this->getAttributesText($item)?'('.$this->getAttributesText($item).')':'');
             $cart_items[]=array('sku' => $item->getSku(),
                                 'display_name' => $displayName,
-                                'unit_price' => number_format($item->getPrice(), 2),
+                                'unit_price' => $item->getPrice(),
                                 'quantity' => $item->getQty(),
                                 'unit_tax' => $item->getTaxAmount()
                                 );
