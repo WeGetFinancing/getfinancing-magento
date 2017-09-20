@@ -164,5 +164,3 @@ class EmPayTech_GetFinancing_Model_PaymentMethod extends Mage_Payment_Model_Meth
         return $available;
     }
 }
-
-?>

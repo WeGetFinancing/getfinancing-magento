@@ -28,5 +28,3 @@ class EmPayTech_GetFinancing_Adminhtml_Model_System_Config_Source_Mycustomoption
     }
 
 }
-
-?>

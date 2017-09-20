@@ -294,7 +294,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
     Mage::log('GetFinancing: transact: outputting OK');
 
-    print "OK\n";
+    Mage::app()->getResponse()->setBody("OK\n");
 
   }
 
@@ -303,7 +303,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     /* FIXME: eventually change the order's billing/shipping ? */
     Mage::log('GetFinancing: update_customer: outputting OK');
 
-    print "OK\n";
+    Mage::app()->getResponse()->setBody("OK\n");
   }
 
   public function transactAction()
@@ -389,7 +389,6 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     // LOOK FOR EXISTING ORDER TO AVOID DUPLICATES
     $order = Mage::getModel('sales/order')->loadByIncrementId($reservedOrderId);
     if ($order->getId()) {
-      //print_r($order);
       Mage::log('GetFinancing: convertQuote: we already have order with id ' .
       $reservedOrderId);
       return $order;
