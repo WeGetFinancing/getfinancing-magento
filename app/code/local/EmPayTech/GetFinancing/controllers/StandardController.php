@@ -294,7 +294,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
 
     Mage::log('GetFinancing: transact: outputting OK');
 
-    Mage::app()->getResponse()->setBody("OK\n");
+    /* @noEscape */ echo "OK\n";
 
   }
 
@@ -302,8 +302,7 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
   {
     /* FIXME: eventually change the order's billing/shipping ? */
     Mage::log('GetFinancing: update_customer: outputting OK');
-
-    Mage::app()->getResponse()->setBody("OK\n");
+    /* @noEscape */ echo "OK\n";
   }
 
   public function transactAction()
