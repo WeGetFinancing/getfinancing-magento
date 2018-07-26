@@ -19,6 +19,21 @@ In order to correctly use docker for this project, there are some `Make` command
 **mg_rebuild_db**: (Delete/Rebuild Magento database)\
 **mg_install_gf_plugin**: (Reinstall Magento and GetFinancing Plugin)\
 **mg_cache_clear**: (Clear magento cache)\
+**mg_set_base_url**: (Set a new base url for Magento1)\
 
 ### Delete Magento cache:
 `docker exec mage1-apache2 n98-magerun cache:clean --root-dir=/var/www/html/magento`
+
+## Tools
+
+In order to receive postbacks **ngrok** (https://ngrok.com/) and **localtunnel** (https://localtunnel.github.io/www/) tools will help you to expose your container to internet for free\
+
+With **ngrock**:
+
+`ngrok http 80` 
+
+Set the URL with:
+
+`make mg_set_base_url`\
+ or\
+`docker exec -it gf_mage1_http /bin/set_mage_base_url.sh `

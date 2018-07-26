@@ -55,6 +55,11 @@ mg_install_gf_plugin: ##@ Install Magento base, Magento sample data and GetFinan
 mg_cache_clear: ##@ Clear magento cache
 	@echo Clear cache in $(MG_WEB_ID)
 	docker exec $(MG_WEB_ID) n98-magerun cache:clean --root-dir=/var/www/html/magento
+	docker exec $(MG_WEB_ID) n98-magerun cache:flush --root-dir=/var/www/html/magento
+
+mg_set_base_url: ##@ Set a new base url for Magento1
+	@echo Set new base url for $(MG_WEB_ID)
+	docker exec -it $(MG_WEB_ID) /bin/set_mage_base_url.sh 
 
 .DEFAULT_GOAL := help
 

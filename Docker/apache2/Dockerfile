@@ -15,11 +15,12 @@ RUN apt-get update && apt-get install -y apache2 mysql-client \
     && a2enmod rewrite 
 
 ADD ./run.sh /bin/run.sh 
+ADD ./set_mage_base_url.sh /bin/
 ADD ./.env /var/www/
 ADD magento1.conf /
 ADD magento-install.sh /bin/
 ADD rebuild-db.sh /bin/
-RUN chmod u+x /bin/run.sh /bin/magento-install.sh  /bin/rebuild-db.sh \
+RUN chmod u+x /bin/run.sh /bin/magento-install.sh  /bin/rebuild-db.sh /bin/set_mage_base_url.sh \
     && curl -O https://files.magerun.net/n98-magerun.phar; mv n98-magerun.phar /bin/n98-magerun \
     && chmod u+x /bin/n98-magerun  && mkdir /var/www/html/magento 
 
