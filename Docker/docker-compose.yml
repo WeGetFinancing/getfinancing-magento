@@ -1,0 +1,27 @@
+version: '3'
+
+services: 
+  mage1-mysql-db: # mysqlDB server
+    container_name: mage1-mysql-db
+    hostname: mage1-mysql-db
+    image: mysql:5.6
+    volumes:
+      - mage1-mysqldb_data:/var/lib/mysql/data
+    env_file:
+      - ./apache2/.env
+    ports: 
+      - "3306:3306"
+  mage1-apache2: # presta web server with the code
+    container_name: mage1-apache2
+    build: 
+      context: ./apache2/
+    ports:
+      - "8280:80"
+      - "8480:443"
+    env_file:
+      - ./apache2/.env
+    links:
+      - mage1-mysql-db
+
+volumes:
+    mage1-mysqldb_data: # This is for mysqldb 
