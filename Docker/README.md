@@ -28,6 +28,13 @@ In order to correctly use docker for this project, there are some `Make` command
 
 In order to receive postbacks **ngrok** (https://ngrok.com/) and **localtunnel** (https://localtunnel.github.io/www/) tools will help you to expose your container to internet for free\
 
+SSL Tunnel, if you have a server with ssh access you can use it to redirect:\
+`ssh -R 8280:localhost:8480  serveruser@yourserverhost.com`\
+8280 is any port you can use to access your server, then **change your magento url**\
+`make mg_set_base_url`\
+Change it to **http://serverhost.com:8280/**
+
+
 With **ngrock**:
 
 `ngrok http 80` 
@@ -37,3 +44,7 @@ Set the URL with:
 `make mg_set_base_url`\
  or\
 `docker exec -it gf_mage1_http /bin/set_mage_base_url.sh `
+
+## Notes:
+
+**US Country** is in German, you will find it as **"Vereinigte Staaten"**

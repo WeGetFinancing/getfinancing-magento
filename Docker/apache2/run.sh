@@ -10,6 +10,11 @@ done
 
 mkdir -p /var/run/apache2 # Create the APACHE_RUN_DIR (just to avoid warnings)
 
+SRV_IP=$(ip addr show | grep eth0 | grep inet | awk '{ print $2}' | cut -d '/' -f 1)
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem -subj "/C=NL/ST=Zuid Holland/L=Rotterdam/O=Sparkling Network/OU=IT Department/CN=$SRV_IP"
+LoadModule ssl_module modules/mod_ssl.so
+a2enmod ssl
+
 rm /etc/apache2/sites-enabled/000-default.conf
 cp /magento1.conf /etc/apache2/sites-enabled/000-default.conf
 
