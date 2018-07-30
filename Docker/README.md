@@ -48,3 +48,11 @@ Set the URL with:
 ## Notes:
 
 **US Country** is in German, you will find it as **"Vereinigte Staaten"**
+
+## Helpers:
+**check_replace_diff_module_files.sh** script was created to check differences between modified plugin code and code in Docker just downloaded from repo after use magento_install script\
+Use with Docker container volume like this:\
+`./check_replace_diff_module_files.sh /var/lib/docker/volumes/docker_mage1-http/_data/magento/`
+
+Get container volume directory:\
+`docker inspect mage1-apache2 | grep volume | grep -i source --color`
