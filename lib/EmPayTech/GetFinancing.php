@@ -24,9 +24,10 @@ class GetFinancing
      * @param string $username
      * @param string $password
      */
-    public function __construct( $merch_id, $username, $password, $merchant_token, $mpe_enabled) {
+    public function __construct( $merch_id, $username, $password, $merchant_token, $mpe_enabled, $delete_not_funded) {
         $this->url = '';
         $this->merch_id = $merch_id;
+        $this->delete_not_funded = $delete_not_funded;
         $this->_username = $username;
         $this->_password = $password;
         $this->merchant_token = $merchant_token;
@@ -140,7 +141,7 @@ class GetFinancing_Magento extends GetFinancing
 
         $this->configured = TRUE;
 
-        parent::__construct($merch_id, $username, $password, $merchant_token, $mpe_enabled);
+        parent::__construct($merch_id, $username, $password, $merchant_token, $mpe_enabled, $delete_not_funded);
     }
 
     /* parent class implementations */

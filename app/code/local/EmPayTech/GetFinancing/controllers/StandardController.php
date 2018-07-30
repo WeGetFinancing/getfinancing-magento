@@ -221,16 +221,18 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     $json = file_get_contents('php://input');
     $params = json_decode($json,true);
 
-    //create the order
-    // FIXME: do not create the order unless the postback is approved. (rsa 05/16)
-    $reservedOrderId = $params['merchant_transaction_id'];
-    $order = $this->_convertQuote($reservedOrderId);
+    $getfinancing = new GetFinancing_Magento($this->getPaymentMethod());
+    if (isset($params["updates"]) && isset($params["updates"]["status"]) && $params["updates"]["status"] === 'approved' || $getfinancing->delete_not_funded == false) { 
+        // Only when an order is approved or Delete Not Funded option is FALSE (allways save approved/funded orders, and save not funded allways delete not funded is false)
+        $reservedOrderId = $params['merchant_transaction_id'];
+        $order = $this->_convertQuote($reservedOrderId);
 
-    $postbackMessage = 'GetFinancing: postback: received postback ';
-    Mage::log($postbackMessage);
-    Mage::log("GetFinancing: postback: " . http_build_query($params));
+        $postbackMessage = 'GetFinancing: postback: received postback ';
+        Mage::log($postbackMessage);
+        Mage::log("GetFinancing: postback: " . http_build_query($params));
 
-    return $this->_postbackTransact($order);
+        return $this->_postbackTransact($order);
+    }
   }
 
   private function _postbackTransact($order)

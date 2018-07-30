@@ -52,6 +52,9 @@ Selenium/SST tests
 New release
 -----------
 
-- update version number
-  vim Makefile
-  vim app/code/local/EmPayTech/GetFinancing/etc/config.xml
+- update version number:\
+  `vim Makefile`\
+  `vim app/code/local/EmPayTech/GetFinancing/etc/config.xml`
+
+- Create the release:\
+   Use `make` command to create the new release
