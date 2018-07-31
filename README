@@ -74,4 +74,8 @@ Create new package with Magento Connect
 Follow this instructions:\
 https://www.brihaspatitech.com/blog/create-magento-extension-package-file/
 
-Remember to add all the plugin files at Contents section
+Remember to add all the plugin files at Contents section\
+1- Install last plugin version\
+2- Modify the plugin code\
+3- Add files and folders in Magento Connect section of the admin\
+4- Create package

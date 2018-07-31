@@ -222,7 +222,9 @@ class EmPayTech_GetFinancing_StandardController extends Mage_Core_Controller_Fro
     $params = json_decode($json,true);
 
     $getfinancing = new GetFinancing_Magento($this->getPaymentMethod());
-    if (isset($params["updates"]) && isset($params["updates"]["status"]) && $params["updates"]["status"] === 'approved' || $getfinancing->delete_not_funded == false) { 
+
+    $deleteNotFunded = Mage::getStoreConfig('payment')['getfinancing']['delete_not_funded'];
+    if (isset($params["updates"]) && isset($params["updates"]["status"]) && ($params["updates"]["status"] === 'approved' || !$deleteNotFunded)) {
         // Only when an order is approved or Delete Not Funded option is FALSE (allways save approved/funded orders, and save not funded allways delete not funded is false)
         $reservedOrderId = $params['merchant_transaction_id'];
         $order = $this->_convertQuote($reservedOrderId);
